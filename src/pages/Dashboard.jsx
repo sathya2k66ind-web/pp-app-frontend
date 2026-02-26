@@ -1,17 +1,74 @@
-export default function Dashboard() {
+import { useNavigate } from "react-router-dom";
+import EventBanner from "../components/EventBanner";
+import LocationCard from "../components/LocationCard";
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
-          Logout
+    <div className="space-y-10">
+
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-white">
+            Park <span className="text-lime-400">Pulse</span>
+          </h1>
+          <p className="text-zinc-400 text-sm mt-1">
+            Real-time smart parking insights
+          </p>
+        </div>
+
+        <button
+          onClick={() => navigate("/my-bookings")}
+          className="bg-white/10 border border-white/20 text-white px-5 py-2 rounded-xl hover:bg-white/20 transition"
+        >
+          My Bookings
         </button>
-      </header>
-      <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">Widget 1</div>
-        <div className="bg-white p-6 rounded-lg shadow">Widget 2</div>
-        <div className="bg-white p-6 rounded-lg shadow">Widget 3</div>
-      </main>
+      </div>
+
+      {/* Live Events */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4 text-white">Live Events</h2>
+
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          <EventBanner
+            title="Mall Festival"
+            status="High Demand"
+            description="Expect limited parking availability"
+          />
+
+          <EventBanner
+            title="Movie Premiere"
+            status="Limited Slots"
+            description="Pre-book your parking now"
+          />
+        </div>
+      </div>
+
+      {/* Recommended */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4 text-white">
+          Recommended Places
+        </h2>
+
+        <div className="space-y-4">
+          <LocationCard
+            name="Phoenix Mall"
+            distance="2.1 km"
+            slots="120"
+          />
+
+          <LocationCard
+            name="City Center"
+            distance="3.5 km"
+            slots="75"
+          />
+        </div>
+      </div>
+
     </div>
   );
-} 
+};
+
+export default Dashboard;
