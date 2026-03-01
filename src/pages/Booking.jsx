@@ -14,60 +14,76 @@ export default function Booking() {
 
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [floor, setFloor] = useState("F1");
-  const [entryMinutes, setEntryMinutes] = useState(600); // 10:00 AM default
-  const [exitMinutes, setExitMinutes] = useState(660); // 11:00 AM default
+  const [entryMinutes, setEntryMinutes] = useState(600); // 10:00 AM
+  const [exitMinutes, setExitMinutes] = useState(660); // 11:00 AM
   const [showHeatmap, setShowHeatmap] = useState(false);
 
-  // Convert minutes to HH:MM
+  // Format time
   const formatTime = (mins) => {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   };
 
+  // Adjust time in 10 min increments
   const adjustTime = (type, amount) => {
     if (type === "entry") {
       setEntryMinutes((prev) => Math.max(0, prev + amount));
+      setSelectedSlot(null);
     } else {
-      setExitMinutes((prev) => Math.max(entryMinutes + 10, prev + amount));
+      setExitMinutes((prev) =>
+        Math.max(entryMinutes + 10, prev + amount)
+      );
     }
   };
 
-  // 🔥 Smart Mock Heatmap Logic
+  // 🔥 AI SMART HEATMAP
   const slots = useMemo(() => {
     if (!showHeatmap) return [];
 
     const hour = Math.floor(entryMinutes / 60);
 
     return Array.from({ length: 20 }, (_, i) => {
-      let occupancy;
+      let baseOccupancy;
 
-      // Busy evening simulation
+      // Cluster congestion in middle
+      const clusterFactor =
+        i >= 7 && i <= 12 ? 0.3 : 0;
+
+      // Evening rush
       if (hour >= 17 && hour <= 21) {
-        occupancy = Math.random() * 0.7 + 0.3;
+        baseOccupancy = 0.5 + Math.random() * 0.5;
       }
-      // Light morning
+      // Morning light
       else if (hour >= 8 && hour <= 11) {
-        occupancy = Math.random() * 0.4;
+        baseOccupancy = Math.random() * 0.4;
       }
-      // Normal afternoon
+      // Afternoon moderate
       else {
-        occupancy = Math.random() * 0.8;
+        baseOccupancy = 0.3 + Math.random() * 0.5;
       }
+
+      const occupancy = Math.min(
+        baseOccupancy + clusterFactor,
+        1
+      );
+
+      // Permanent blocked
+      const permanentlyBlocked =
+        i === 2 || i === 17;
+
+      // Time-based unavailable
+      const predictedFull = occupancy > 0.75;
 
       return {
         id: `${floor}-A${i + 1}`,
         occupancy,
-        unavailable: occupancy > 0.8
+        unavailable:
+          permanentlyBlocked || predictedFull,
+        permanentlyBlocked
       };
     });
   }, [floor, entryMinutes, showHeatmap]);
-
-  const getHeatColor = (value) => {
-    if (value < 0.3) return "bg-green-500";
-    if (value < 0.6) return "bg-yellow-400";
-    return "bg-red-500";
-  };
 
   const duration =
     exitMinutes > entryMinutes
@@ -87,8 +103,11 @@ export default function Booking() {
   };
 
   useEffect(() => {
-    if (entryMinutes) setShowHeatmap(true);
-  }, [entryMinutes]);
+    if (entryMinutes) {
+      setShowHeatmap(true);
+      setSelectedSlot(null);
+    }
+  }, [entryMinutes, floor]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -103,13 +122,15 @@ export default function Booking() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black"></div>
 
         <div className="absolute bottom-6 left-6">
-          <h1 className="text-3xl font-bold">{mall.name}</h1>
+          <h1 className="text-3xl font-bold">
+            {mall.name}
+          </h1>
         </div>
       </div>
 
       <div className="p-6 max-w-5xl mx-auto">
 
-        {/* 🔥 MODERN TIME PICKER */}
+        {/* TIME PICKER */}
         <h2 className="text-xl font-semibold mb-4">
           Select Entry & Exit Time
         </h2>
@@ -124,7 +145,9 @@ export default function Booking() {
 
             <div className="flex justify-center items-center gap-4">
               <button
-                onClick={() => adjustTime("entry", -10)}
+                onClick={() =>
+                  adjustTime("entry", -10)
+                }
                 className="bg-white/10 px-4 py-2 rounded-xl"
               >
                 -
@@ -135,7 +158,9 @@ export default function Booking() {
               </span>
 
               <button
-                onClick={() => adjustTime("entry", 10)}
+                onClick={() =>
+                  adjustTime("entry", 10)
+                }
                 className="bg-white/10 px-4 py-2 rounded-xl"
               >
                 +
@@ -151,7 +176,9 @@ export default function Booking() {
 
             <div className="flex justify-center items-center gap-4">
               <button
-                onClick={() => adjustTime("exit", -10)}
+                onClick={() =>
+                  adjustTime("exit", -10)
+                }
                 className="bg-white/10 px-4 py-2 rounded-xl"
               >
                 -
@@ -162,7 +189,9 @@ export default function Booking() {
               </span>
 
               <button
-                onClick={() => adjustTime("exit", 10)}
+                onClick={() =>
+                  adjustTime("exit", 10)
+                }
                 className="bg-white/10 px-4 py-2 rounded-xl"
               >
                 +
@@ -201,7 +230,7 @@ export default function Booking() {
           ))}
         </div>
 
-        {/* 🔥 HEATMAP */}
+        {/* HEATMAP */}
         <AnimatePresence>
           {showHeatmap && !selectedSlot && (
             <motion.div
@@ -216,34 +245,86 @@ export default function Booking() {
 
               <div className="grid grid-cols-5 gap-4">
                 {slots.map((slot) => {
-                  const isDisabled = slot.unavailable;
+                  const isDisabled =
+                    slot.unavailable;
+
+                  let bgColor;
+
+                  if (slot.permanentlyBlocked) {
+                    bgColor = "bg-gray-700";
+                  } else if (slot.occupancy < 0.3) {
+                    bgColor = "bg-green-500";
+                  } else if (slot.occupancy < 0.6) {
+                    bgColor = "bg-yellow-400";
+                  } else {
+                    bgColor = "bg-red-500";
+                  }
 
                   return (
                     <motion.div
                       key={slot.id}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() =>
-                        !isDisabled && setSelectedSlot(slot.id)
+                      whileTap={
+                        !isDisabled
+                          ? { scale: 0.95 }
+                          : {}
                       }
-                      className={`p-4 rounded-xl text-center font-semibold transition
-                        ${getHeatColor(slot.occupancy)}
+                      onClick={() =>
+                        !isDisabled &&
+                        setSelectedSlot(
+                          slot.id
+                        )
+                      }
+                      className={`
+                        relative p-4 rounded-xl text-center font-semibold
+                        transition shadow-lg
+                        ${bgColor}
                         ${
                           isDisabled
-                            ? "opacity-30 cursor-not-allowed"
-                            : "cursor-pointer"
+                            ? "opacity-40 cursor-not-allowed"
+                            : "cursor-pointer hover:scale-105"
                         }
                       `}
                     >
                       {slot.id}
+
+                      {isDisabled && (
+                        <div className="absolute inset-0 flex items-center justify-center text-black font-bold text-xl">
+                          ✕
+                        </div>
+                      )}
                     </motion.div>
                   );
                 })}
               </div>
+
+              {/* LEGEND */}
+              <div className="flex flex-wrap gap-6 mt-6 text-sm text-gray-400">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-green-500 rounded"></div>
+                  Low Occupancy
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+                  Medium
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-red-500 rounded"></div>
+                  High Congestion
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-700 rounded"></div>
+                  Reserved / Maintenance
+                </div>
+              </div>
+
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* CONTINUE BUTTON */}
+        {/* CONTINUE */}
         {selectedSlot && (
           <motion.button
             initial={{ opacity: 0, y: 10 }}
