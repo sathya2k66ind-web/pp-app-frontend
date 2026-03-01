@@ -1,40 +1,40 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Ticket, MapPin, Zap, Flame, Star, Bell, Search, Music, Trophy } from "lucide-react";
+import { Ticket, MapPin, Zap, Star, Bell, Search, Music, Trophy, ChevronRight } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
 
-  // 🔥 LIVE CITY PULSE (SLIDING EVENTS)
+  // 🏙️ REFINED LIVE EVENTS
   const liveEvents = [
     {
       id: 1,
       title: "Neon Midnight Sale",
       location: "Phoenix Marketcity",
       tag: "50% OFF",
-      icon: <Zap size={18} />,
+      icon: <Zap size={18} fill="currentColor" />,
       color: "from-purple-600 to-blue-500",
-      image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3"
+      image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=800"
     },
     {
       id: 2,
       title: "Underground Jazz Fest",
       location: "UB City Arena",
       tag: "LIVE NOW",
-      icon: <Music size={18} />,
+      icon: <Music size={18} fill="currentColor" />,
       color: "from-orange-600 to-red-500",
-      image: "https://images.unsplash.com/photo-1514525253344-7814d999d641"
+      image: "https://images.unsplash.com/photo-1514525253344-7814d999d641?auto=format&fit=crop&q=80&w=800"
     },
     {
       id: 3,
       title: "E-Sports Qualifiers",
       location: "Nexus Mall",
       tag: "TOURNAMENT",
-      icon: <Trophy size={18} />,
+      icon: <Trophy size={18} fill="currentColor" />,
       color: "from-green-600 to-cyan-500",
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e"
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
     }
   ];
 
@@ -46,7 +46,7 @@ const Dashboard = () => {
       distance: "0.8 km",
       rating: 4.9,
       status: "High Demand",
-      image: "https://images.unsplash.com/photo-1567449303078-57ad995bd301"
+      image: "https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?auto=format&fit=crop&q=80&w=800"
     },
     {
       id: "phoenix",
@@ -54,7 +54,7 @@ const Dashboard = () => {
       distance: "2.4 km",
       rating: 4.7,
       status: "Available",
-      image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3"
+      image: "https://images.unsplash.com/photo-1567449303078-57ad995bd301?auto=format&fit=crop&q=80&w=800"
     },
     {
       id: "nexus",
@@ -62,146 +62,151 @@ const Dashboard = () => {
       distance: "4.1 km",
       rating: 4.5,
       status: "Congested",
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-    },
-    {
-      id: "mantri",
-      name: "Mantri Square",
-      distance: "5.5 km",
-      rating: 4.2,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f"
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800"
     }
   ];
 
-  // Auto-slide logic
+  // Auto-slide logic for the Event Banner
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveTab((prev) => (prev + 1) % liveEvents.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [liveEvents.length]);
 
   return (
-    <div className="min-h-screen bg-[#001F3F] text-white pb-24 font-sans">
+    <div className="min-h-screen bg-[#000d1a] text-white pb-32 font-sans overflow-x-hidden">
       
-      {/* 1. TOP NAVIGATION BAR */}
-      <nav className="p-6 flex justify-between items-center bg-gradient-to-b from-[#001F3F] to-transparent sticky top-0 z-50 backdrop-blur-md">
+      {/* 1. TOP NAVIGATION */}
+      <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-xl border-b border-white/5">
         <div className="flex flex-col">
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00FFFF]">Slotify</span>
-          <span className="text-xl font-black italic-none tracking-tighter">BENGALURU</span>
+          <span className="text-xl font-black italic tracking-tighter flex items-center gap-2">
+            BENGALURU <ChevronRight size={14} className="text-[#00FFFF]" />
+          </span>
         </div>
-        <div className="flex gap-4">
-          <div className="p-3 bg-white/5 rounded-full border border-white/10 relative">
+        <div className="flex gap-4 items-center">
+          <div className="relative p-2.5 bg-white/5 rounded-full border border-white/10 cursor-pointer">
             <Bell size={20} />
-            <div className="absolute top-3 right-3 w-2 h-2 bg-[#00FFFF] rounded-full shadow-[0_0_10px_#00FFFF]" />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#00FFFF] rounded-full animate-pulse shadow-[0_0_10px_#00FFFF]" />
           </div>
-          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#00FFFF]/30 shadow-lg">
+          <div className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden shadow-lg">
             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Slotify" alt="User" />
           </div>
         </div>
       </nav>
 
       {/* 2. SEARCH BAR */}
-      <div className="px-6 mb-8">
+      <div className="px-6 mt-6">
         <div className="relative group">
-          <Search className="absolute left-4 top-4 text-gray-500 group-focus-within:text-[#00FFFF] transition-colors" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#00FFFF] transition-colors" size={18} />
           <input 
             type="text" 
             placeholder="Find your next destination..." 
-            className="w-full bg-white/5 border border-white/10 py-4 pl-12 pr-6 rounded-2xl focus:outline-none focus:border-[#00FFFF]/50 focus:bg-white/10 transition-all text-sm"
+            className="w-full bg-white/5 border border-white/10 py-4 pl-12 pr-6 rounded-2xl focus:outline-none focus:border-[#00FFFF]/40 focus:bg-white/10 transition-all text-sm"
           />
         </div>
       </div>
 
       {/* 3. LIVE CITY PULSE (SLIDER) */}
-      <div className="px-6 mb-10 overflow-hidden">
+      <section className="px-6 mt-8">
         <div className="flex justify-between items-end mb-4 px-1">
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">Live City Pulse</h2>
-          <div className="flex gap-1">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Live City Pulse</h2>
+          <div className="flex gap-1.5">
             {liveEvents.map((_, i) => (
               <div key={i} className={`h-1 rounded-full transition-all duration-500 ${activeTab === i ? "w-6 bg-[#00FFFF]" : "w-2 bg-white/10"}`} />
             ))}
           </div>
         </div>
 
-        <div className="relative h-48 w-full group">
+        <div className="relative h-52 w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              className={`absolute inset-0 rounded-[2.5rem] overflow-hidden p-6 flex flex-col justify-end bg-gradient-to-br ${liveEvents[activeTab].color}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`absolute inset-0 rounded-[2.5rem] overflow-hidden p-8 flex flex-col justify-end bg-gradient-to-br ${liveEvents[activeTab].color} shadow-2xl shadow-black/50`}
             >
-              <img src={liveEvents[activeTab].image} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40" alt="Event" />
+              <img src={liveEvents[activeTab].image} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 grayscale-[20%]" alt="Event" />
               <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/30 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest mb-3">
-                  {liveEvents[activeTab].icon}
+                <motion.div 
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest mb-4 border border-white/10"
+                >
+                  <span className="text-[#00FFFF]">{liveEvents[activeTab].icon}</span>
                   {liveEvents[activeTab].tag}
-                </div>
-                <h3 className="text-2xl font-black uppercase tracking-tight leading-none">{liveEvents[activeTab].title}</h3>
-                <p className="text-xs font-bold text-white/70 mt-1 flex items-center gap-1 uppercase tracking-widest">
-                  <MapPin size={12} /> {liveEvents[activeTab].location}
+                </motion.div>
+                <h3 className="text-3xl font-black uppercase tracking-tighter leading-none italic">{liveEvents[activeTab].title}</h3>
+                <p className="text-[10px] font-bold text-white/70 mt-2 flex items-center gap-1 uppercase tracking-[0.2em]">
+                  <MapPin size={12} className="text-[#00FFFF]" /> {liveEvents[activeTab].location}
                 </p>
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
-      </div>
+      </section>
 
-      {/* 4. MALL LIST (THE GRID) */}
-      <div className="px-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-sm font-black uppercase tracking-widest italic-none">Unlocked Malls</h2>
-          <span className="text-[10px] font-bold text-[#00FFFF] uppercase tracking-widest cursor-pointer">View All</span>
+      {/* 4. UNLOCKED MALLS */}
+      <section className="px-6 mt-12">
+        <div className="flex justify-between items-center mb-6 px-1">
+          <h2 className="text-sm font-black uppercase tracking-widest">Unlocked Malls</h2>
+          <span className="text-[10px] font-black text-[#00FFFF] uppercase tracking-widest cursor-pointer hover:underline">View All</span>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          {malls.map((mall) => (
+        <div className="space-y-4">
+          {malls.map((mall, idx) => (
             <motion.div
               key={mall.id}
-              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/booking", { state: mall })}
-              className="group bg-white/5 border border-white/5 rounded-[2rem] p-4 flex items-center gap-5 hover:bg-white/10 hover:border-[#00FFFF]/20 transition-all cursor-pointer"
+              className="group bg-white/[0.03] border border-white/5 rounded-[2.2rem] p-4 flex items-center gap-5 hover:bg-white/[0.08] hover:border-[#00FFFF]/20 transition-all cursor-pointer"
             >
-              <div className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0">
-                <img src={mall.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={mall.name} />
+              <div className="relative w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0 border border-white/10">
+                <img src={mall.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 grayscale-[30%] group-hover:grayscale-0" alt={mall.name} />
               </div>
               
               <div className="flex-1">
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors">{mall.name}</h3>
-                </div>
+                <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors">{mall.name}</h3>
                 
-                <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                  <div className="flex items-center gap-1"><MapPin size={10} className="text-[#00FFFF]" /> {mall.distance}</div>
-                  <div className="flex items-center gap-1 text-orange-400"><Star size={10} fill="currentColor" /> {mall.rating}</div>
+                <div className="flex items-center gap-4 mt-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                  <div className="flex items-center gap-1"><MapPin size={12} className="text-[#00FFFF]" /> {mall.distance}</div>
+                  <div className="flex items-center gap-1 text-orange-400"><Star size={12} fill="currentColor" /> {mall.rating}</div>
                 </div>
 
-                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-[#001F3F] border border-white/5 rounded-lg">
-                  <div className={`w-1.5 h-1.5 rounded-full ${mall.status === "High Demand" ? "bg-red-500 animate-pulse" : mall.status === "Available" ? "bg-[#00FFFF]" : "bg-orange-500"}`} />
-                  <span className="text-[8px] font-black uppercase tracking-widest text-white/60">{mall.status}</span>
+                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-[#000d1a] border border-white/10 rounded-full">
+                  <div className={`w-1.5 h-1.5 rounded-full ${mall.status === "High Demand" ? "bg-red-500 animate-pulse shadow-[0_0_8px_red]" : mall.status === "Available" ? "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]" : "bg-orange-500"}`} />
+                  <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">{mall.status}</span>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* 5. BOTTOM NAVIGATION DOCK */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-20 bg-black/40 backdrop-blur-2xl rounded-full border border-white/10 flex justify-around items-center px-4 z-[100] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+      {/* 5. THE SINGLE GLASS DOCK (Fixed Positioning) */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-20 bg-black/50 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 flex justify-around items-center px-6 z-[100] shadow-[0_25px_50px_rgba(0,0,0,0.6)]">
+        
+        {/* Active Item */}
         <button className="flex flex-col items-center gap-1 text-[#00FFFF]">
-          <div className="p-3 bg-[#00FFFF]/10 rounded-full shadow-[0_0_20px_rgba(0,255,255,0.1)]"><Zap size={22} fill="currentColor" /></div>
+          <div className="p-3 bg-[#00FFFF]/10 rounded-full shadow-[0_0_20px_rgba(0,255,255,0.1)]">
+            <Zap size={24} fill="currentColor" />
+          </div>
         </button>
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <Ticket size={22} />
+
+        {/* Inactive Items */}
+        <button className="p-3 text-gray-500 hover:text-white transition-colors">
+          <Ticket size={24} />
         </button>
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <MapPin size={22} />
+        <button className="p-3 text-gray-500 hover:text-white transition-colors">
+          <MapPin size={24} />
         </button>
-        <button className="text-gray-500 hover:text-white transition-colors">
-          <Star size={22} />
+        <button className="p-3 text-gray-500 hover:text-white transition-colors">
+          <Star size={24} />
         </button>
       </div>
 
