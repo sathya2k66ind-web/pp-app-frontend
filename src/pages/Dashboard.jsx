@@ -1,170 +1,209 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Ticket, MapPin, Zap, Bell, Search, 
-  Filter, ChevronRight, Activity, Star, TrendingUp 
-} from "lucide-react";
+import { Ticket, MapPin, Zap, Flame, Star, Bell, Search, Music, Trophy } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [hoveredId, setHoveredId] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeTab, setActiveTab] = useState(0);
 
-  const categories = ["All", "Premium", "Nearby", "Events", "Valet"];
-
-  const trendingMalls = [
-    { id: "ub-city", name: "UB CITY", dist: "0.8km", load: 85, price: "₹60/hr", rating: 4.9, img: "https://images.unsplash.com/photo-1577495508326-19a1b3cf65b7?auto=format&fit=crop&q=80&w=800" },
-    { id: "phoenix", name: "PHOENIX", dist: "2.4km", load: 30, price: "₹40/hr", rating: 4.7, img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=800" },
+  // 🔥 LIVE CITY PULSE (SLIDING EVENTS)
+  const liveEvents = [
+    {
+      id: 1,
+      title: "Neon Midnight Sale",
+      location: "Phoenix Marketcity",
+      tag: "50% OFF",
+      icon: <Zap size={18} />,
+      color: "from-purple-600 to-blue-500",
+      image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3"
+    },
+    {
+      id: 2,
+      title: "Underground Jazz Fest",
+      location: "UB City Arena",
+      tag: "LIVE NOW",
+      icon: <Music size={18} />,
+      color: "from-orange-600 to-red-500",
+      image: "https://images.unsplash.com/photo-1514525253344-7814d999d641"
+    },
+    {
+      id: 3,
+      title: "E-Sports Qualifiers",
+      location: "Nexus Mall",
+      tag: "TOURNAMENT",
+      icon: <Trophy size={18} />,
+      color: "from-green-600 to-cyan-500",
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e"
+    }
   ];
 
-  const nearbyMalls = [
-    { id: "nexus", name: "NEXUS", dist: "4.1km", load: 60, price: "₹50/hr", rating: 4.5, img: "https://images.unsplash.com/photo-1560185008-b033106af5c3?auto=format&fit=crop&q=80&w=800" },
-    { id: "mantri", name: "MANTRI", dist: "5.5km", load: 45, price: "₹30/hr", rating: 4.2, img: "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?auto=format&fit=crop&q=80&w=800" },
+  // 🏙️ PREMIUM MALL DIRECTORY
+  const malls = [
+    {
+      id: "ub-city",
+      name: "UB City Mall",
+      distance: "0.8 km",
+      rating: 4.9,
+      status: "High Demand",
+      image: "https://images.unsplash.com/photo-1567449303078-57ad995bd301"
+    },
+    {
+      id: "phoenix",
+      name: "Phoenix Marketcity",
+      distance: "2.4 km",
+      rating: 4.7,
+      status: "Available",
+      image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3"
+    },
+    {
+      id: "nexus",
+      name: "Nexus Koramangala",
+      distance: "4.1 km",
+      rating: 4.5,
+      status: "Congested",
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+    },
+    {
+      id: "mantri",
+      name: "Mantri Square",
+      distance: "5.5 km",
+      rating: 4.2,
+      status: "Available",
+      image: "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f"
+    }
   ];
+
+  // Auto-slide logic
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % liveEvents.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#000d1a] text-white pb-32 font-sans selection:bg-[#00FFFF] selection:text-black">
+    <div className="min-h-screen bg-[#001F3F] text-white pb-24 font-sans">
       
-      {/* HEADER SECTION */}
-      <header className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-xl border-b border-white/5">
+      {/* 1. TOP NAVIGATION BAR */}
+      <nav className="p-6 flex justify-between items-center bg-gradient-to-b from-[#001F3F] to-transparent sticky top-0 z-50 backdrop-blur-md">
         <div className="flex flex-col">
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00FFFF]">Slotify</span>
-          <span className="text-lg font-black tracking-tighter flex items-center gap-2">
-            BENGALURU <ChevronRight size={14} className="text-[#00FFFF]" />
-          </span>
+          <span className="text-xl font-black italic-none tracking-tighter">BENGALURU</span>
         </div>
-        <div className="flex gap-4 items-center">
-          <Search size={22} className="text-gray-400" />
-          <div className="relative p-2 bg-white/5 rounded-full border border-white/10">
+        <div className="flex gap-4">
+          <div className="p-3 bg-white/5 rounded-full border border-white/10 relative">
             <Bell size={20} />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-[#00FFFF] rounded-full" />
+            <div className="absolute top-3 right-3 w-2 h-2 bg-[#00FFFF] rounded-full shadow-[0_0_10px_#00FFFF]" />
+          </div>
+          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#00FFFF]/30 shadow-lg">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Slotify" alt="User" />
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* CATEGORY BAR */}
-      <div className="flex gap-4 overflow-x-auto px-6 py-4 no-scrollbar">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
-              activeCategory === cat 
-              ? "bg-[#00FFFF] text-[#001F3F] border-[#00FFFF]" 
-              : "bg-white/5 text-gray-400 border-white/10 hover:border-white/20"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* 2. SEARCH BAR */}
+      <div className="px-6 mb-8">
+        <div className="relative group">
+          <Search className="absolute left-4 top-4 text-gray-500 group-focus-within:text-[#00FFFF] transition-colors" size={20} />
+          <input 
+            type="text" 
+            placeholder="Find your next destination..." 
+            className="w-full bg-white/5 border border-white/10 py-4 pl-12 pr-6 rounded-2xl focus:outline-none focus:border-[#00FFFF]/50 focus:bg-white/10 transition-all text-sm"
+          />
+        </div>
       </div>
 
-      {/* SECTION 1: TRENDING NOW (Horizontal Scroll) */}
-      <section className="mt-4">
-        <div className="flex justify-between items-center px-6 mb-4">
-          <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            <TrendingUp size={16} className="text-[#00FFFF]" /> Trending Now
-          </h2>
-          <span className="text-[10px] font-bold text-[#00FFFF] uppercase tracking-widest">See All</span>
+      {/* 3. LIVE CITY PULSE (SLIDER) */}
+      <div className="px-6 mb-10 overflow-hidden">
+        <div className="flex justify-between items-end mb-4 px-1">
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">Live City Pulse</h2>
+          <div className="flex gap-1">
+            {liveEvents.map((_, i) => (
+              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${activeTab === i ? "w-6 bg-[#00FFFF]" : "w-2 bg-white/10"}`} />
+            ))}
+          </div>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto px-6 pb-4 no-scrollbar">
-          {trendingMalls.map((mall) => (
+        <div className="relative h-48 w-full group">
+          <AnimatePresence mode="wait">
             <motion.div
-              key={mall.id}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/booking", { state: mall })}
-              className="relative w-72 shrink-0 group cursor-pointer"
+              key={activeTab}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              className={`absolute inset-0 rounded-[2.5rem] overflow-hidden p-6 flex flex-col justify-end bg-gradient-to-br ${liveEvents[activeTab].color}`}
             >
-              <div className="relative h-96 rounded-[2rem] overflow-hidden border border-white/10">
-                <img src={mall.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={mall.name} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                
-                {/* Rating Badge */}
-                <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 border border-white/10">
-                  <Star size={12} className="text-yellow-400" fill="currentColor" />
-                  <span className="text-xs font-bold">{mall.rating}</span>
+              <img src={liveEvents[activeTab].image} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40" alt="Event" />
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/30 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest mb-3">
+                  {liveEvents[activeTab].icon}
+                  {liveEvents[activeTab].tag}
                 </div>
-
-                <div className="absolute bottom-6 left-6 right-6">
-                  <h3 className="text-2xl font-black uppercase tracking-tighter italic">{mall.name}</h3>
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className="text-[10px] font-bold text-[#00FFFF] bg-[#00FFFF]/10 px-2 py-1 rounded border border-[#00FFFF]/20">
-                      {mall.price}
-                    </span>
-                    <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
-                      {mall.dist}
-                    </span>
-                  </div>
-                </div>
+                <h3 className="text-2xl font-black uppercase tracking-tight leading-none">{liveEvents[activeTab].title}</h3>
+                <p className="text-xs font-bold text-white/70 mt-1 flex items-center gap-1 uppercase tracking-widest">
+                  <MapPin size={12} /> {liveEvents[activeTab].location}
+                </p>
               </div>
             </motion.div>
-          ))}
+          </AnimatePresence>
         </div>
-      </section>
+      </div>
 
-      {/* SECTION 2: NEARBY SPOTS (Vertical High-Detail List) */}
-      <section className="mt-10 px-6">
+      {/* 4. MALL LIST (THE GRID) */}
+      <div className="px-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            <MapPin size={16} className="text-[#00FFFF]" /> Nearby Your Grid
-          </h2>
+          <h2 className="text-sm font-black uppercase tracking-widest italic-none">Unlocked Malls</h2>
+          <span className="text-[10px] font-bold text-[#00FFFF] uppercase tracking-widest cursor-pointer">View All</span>
         </div>
 
-        <div className="space-y-6">
-          {nearbyMalls.map((mall) => (
+        <div className="grid grid-cols-1 gap-4">
+          {malls.map((mall) => (
             <motion.div
               key={mall.id}
-              whileHover={{ x: 5 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate("/booking", { state: mall })}
-              className="flex items-center gap-5 p-4 bg-white/5 rounded-[2rem] border border-white/5 hover:border-[#00FFFF]/20 transition-all cursor-pointer"
+              className="group bg-white/5 border border-white/5 rounded-[2rem] p-4 flex items-center gap-5 hover:bg-white/10 hover:border-[#00FFFF]/20 transition-all cursor-pointer"
             >
-              <img src={mall.img} className="w-24 h-24 object-cover rounded-2xl grayscale hover:grayscale-0 transition-all" alt={mall.name} />
+              <div className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0">
+                <img src={mall.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={mall.name} />
+              </div>
               
               <div className="flex-1">
-                <h3 className="font-black text-lg uppercase tracking-tight">{mall.name}</h3>
-                <div className="flex items-center gap-4 mt-1">
-                  <span className="text-[10px] font-bold text-[#00FFFF]">{mall.price}</span>
-                  <span className="text-[10px] font-bold text-gray-500 uppercase">{mall.dist}</span>
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors">{mall.name}</h3>
                 </div>
                 
-                {/* Capacity HUD */}
-                <div className="mt-3 flex items-center gap-3">
-                  <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${mall.load}%` }}
-                      className={`h-full ${mall.load > 70 ? 'bg-red-500' : 'bg-[#00FFFF]'}`}
-                    />
-                  </div>
-                  <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">{mall.load}% Full</span>
+                <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                  <div className="flex items-center gap-1"><MapPin size={10} className="text-[#00FFFF]" /> {mall.distance}</div>
+                  <div className="flex items-center gap-1 text-orange-400"><Star size={10} fill="currentColor" /> {mall.rating}</div>
+                </div>
+
+                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-[#001F3F] border border-white/5 rounded-lg">
+                  <div className={`w-1.5 h-1.5 rounded-full ${mall.status === "High Demand" ? "bg-red-500 animate-pulse" : mall.status === "Available" ? "bg-[#00FFFF]" : "bg-orange-500"}`} />
+                  <span className="text-[8px] font-black uppercase tracking-widest text-white/60">{mall.status}</span>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* FLOATING GLASS NAVIGATION (DOCK) */}
-      <motion.div 
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md h-20 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-full flex items-center justify-around px-6 z-[100] shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-      >
+      {/* 5. BOTTOM NAVIGATION DOCK */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-20 bg-black/40 backdrop-blur-2xl rounded-full border border-white/10 flex justify-around items-center px-4 z-[100] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
         <button className="flex flex-col items-center gap-1 text-[#00FFFF]">
-           <Zap size={24} fill="currentColor" />
-           <span className="text-[8px] font-black uppercase tracking-widest">Explore</span>
+          <div className="p-3 bg-[#00FFFF]/10 rounded-full shadow-[0_0_20px_rgba(0,255,255,0.1)]"><Zap size={22} fill="currentColor" /></div>
         </button>
-        <button className="flex flex-col items-center gap-1 text-gray-500">
-           <Ticket size={24} />
-           <span className="text-[8px] font-black uppercase tracking-widest">Tickets</span>
+        <button className="text-gray-500 hover:text-white transition-colors">
+          <Ticket size={22} />
         </button>
-        <button className="flex flex-col items-center gap-1 text-gray-500">
-           <Star size={24} />
-           <span className="text-[8px] font-black uppercase tracking-widest">Points</span>
+        <button className="text-gray-500 hover:text-white transition-colors">
+          <MapPin size={22} />
         </button>
-      </motion.div>
+        <button className="text-gray-500 hover:text-white transition-colors">
+          <Star size={22} />
+        </button>
+      </div>
 
     </div>
   );
