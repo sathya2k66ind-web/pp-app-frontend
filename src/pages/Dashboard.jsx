@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Ticket, MapPin, Zap, Star, Bell, Search, Music, Trophy, ChevronRight } from "lucide-react";
+import { api } from "../api/api"; // Ensure this path points to your api.js
+import { logoutUser } from "../api/auth"; // Ensure this path points to your auth.js
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
+  const [malls, setMalls] = useState([]); // Now dynamic
+  const [loading, setLoading] = useState(true);
 
-  // 🏙️ REFINED LIVE EVENTS
+  // 🏙️ REFINED LIVE EVENTS (Can also be moved to backend later)
   const liveEvents = [
     {
       id: 1,
@@ -38,41 +42,44 @@ const Dashboard = () => {
     }
   ];
 
-  // 🏙️ PREMIUM MALL DIRECTORY
-  const malls = [
-    {
-      id: "ub-city",
-      name: "UB City Mall",
-      distance: "0.8 km",
-      rating: 4.9,
-      status: "High Demand",
-      image: "https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-      id: "phoenix",
-      name: "Phoenix Marketcity",
-      distance: "2.4 km",
-      rating: 4.7,
-      status: "Available",
-      image: "https://images.unsplash.com/photo-1567449303078-57ad995bd301?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-      id: "nexus",
-      name: "Nexus Koramangala",
-      distance: "4.1 km",
-      rating: 4.5,
-      status: "Congested",
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800"
-    }
-  ];
-
-  // Auto-slide logic for the Event Banner
+  // 🔄 FETCH LIVE DATA FROM RENDER
   useEffect(() => {
+    const fetchMalls = async () => {
+      try {
+        // Change '/slots' to your actual backend endpoint for mall data
+        const response = await api.get("/api/slots"); 
+        setMalls(response.data);
+      } catch (error) {
+        console.error("Integration Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMalls();
+
     const timer = setInterval(() => {
       setActiveTab((prev) => (prev + 1) % liveEvents.length);
     }, 5000);
     return () => clearInterval(timer);
   }, [liveEvents.length]);
+
+  const handleLogout = () => {
+    if (window.confirm("Logout from Slotify?")) {
+      logoutUser();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#000d1a] flex items-center justify-center">
+        <motion.div 
+          animate={{ rotate: 360 }} 
+          transition={{ repeat: Infinity, duration: 1 }}
+          className="w-10 h-10 border-4 border-[#00FFFF] border-t-transparent rounded-full"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#000d1a] text-white pb-32 font-sans overflow-x-hidden">
@@ -90,7 +97,11 @@ const Dashboard = () => {
             <Bell size={20} />
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#00FFFF] rounded-full animate-pulse shadow-[0_0_10px_#00FFFF]" />
           </div>
-          <div className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden shadow-lg">
+          {/* Profile Icon triggers Logout */}
+          <div 
+            onClick={handleLogout}
+            className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden shadow-lg cursor-pointer hover:scale-105 transition-transform"
+          >
             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Slotify" alt="User" />
           </div>
         </div>
@@ -148,7 +159,7 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* 4. UNLOCKED MALLS */}
+      {/* 4. UNLOCKED MALLS (NOW DYNAMIC) */}
       <section className="px-6 mt-12">
         <div className="flex justify-between items-center mb-6 px-1">
           <h2 className="text-sm font-black uppercase tracking-widest">Unlocked Malls</h2>
@@ -156,9 +167,9 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-4">
-          {malls.map((mall, idx) => (
+          {malls.length > 0 ? malls.map((mall, idx) => (
             <motion.div
-              key={mall.id}
+              key={mall.id || idx}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.1 }}
@@ -184,21 +195,19 @@ const Dashboard = () => {
                 </div>
               </div>
             </motion.div>
-          ))}
+          )) : (
+            <div className="text-center text-gray-500 py-10 font-bold uppercase tracking-widest text-xs">No active slots found in Bengaluru grid</div>
+          )}
         </div>
       </section>
 
-      {/* 5. THE SINGLE GLASS DOCK (Fixed Positioning) */}
+      {/* 5. THE SINGLE GLASS DOCK */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-20 bg-black/50 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 flex justify-around items-center px-6 z-[100] shadow-[0_25px_50px_rgba(0,0,0,0.6)]">
-        
-        {/* Active Item */}
         <button className="flex flex-col items-center gap-1 text-[#00FFFF]">
           <div className="p-3 bg-[#00FFFF]/10 rounded-full shadow-[0_0_20px_rgba(0,255,255,0.1)]">
             <Zap size={24} fill="currentColor" />
           </div>
         </button>
-
-        {/* Inactive Items */}
         <button className="p-3 text-gray-500 hover:text-white transition-colors">
           <Ticket size={24} />
         </button>
@@ -209,7 +218,6 @@ const Dashboard = () => {
           <Star size={24} />
         </button>
       </div>
-
     </div>
   );
 };
