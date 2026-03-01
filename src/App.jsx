@@ -7,11 +7,13 @@ import Payment from "./pages/Payment";
 import Success from "./pages/Success";
 import TicketQR from "./pages/TicketQR";
 import MyBookings from "./pages/MyBookings";
+import Navigate from "./pages/Navigate";
 import MainLayout from "./layouts/MainLayout";
 
 function App() {
   return (
     <Routes>
+
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -53,8 +55,6 @@ function App() {
         }
       />
 
-      <Route path="/ticket" element={<TicketQR />} />
-
       <Route
         path="/my-bookings"
         element={
@@ -64,8 +64,15 @@ function App() {
         }
       />
 
+      {/* Full Screen Ticket */}
+      <Route path="/ticket" element={<TicketQR />} />
+
+      {/* Navigate Screen */}
+      <Route path="/navigate" element={<Navigate />} />
+
       {/* Default */}
       <Route path="*" element={<Login />} />
+
     </Routes>
   );
 }

@@ -15,6 +15,8 @@ const TicketQR = () => {
     date: "Sat, 18 Oct, 2024",
     entryTime: "1:30 PM",
     amount: "30.00",
+    lat: 13.0827,
+    lng: 80.2707,
   };
 
   const [visible, setVisible] = useState(false);
@@ -24,30 +26,34 @@ const TicketQR = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0b0b] text-white flex items-center justify-center px-4 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden text-white px-4">
 
-      {/* Slide Animation Wrapper */}
+      {/* Animated Glow Background */}
+      <div className="absolute w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse top-[-150px] left-[-100px]"></div>
+      <div className="absolute w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[120px] animate-pulse bottom-[-150px] right-[-100px]"></div>
+
+      {/* Slide Animation */}
       <div
-        className={`w-full max-w-md transform transition-all duration-700 ${
+        className={`w-full max-w-md transition-all duration-700 transform ${
           visible
             ? "translate-y-0 opacity-100"
-            : "translate-y-10 opacity-0"
+            : "translate-y-12 opacity-0"
         }`}
       >
 
-        {/* Main Card */}
-        <div className="bg-[#111111] rounded-3xl shadow-2xl overflow-hidden border border-white/10">
+        {/* Glass Card */}
+        <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
 
-          {/* Mall Image Header */}
-          <div className="relative h-40 w-full overflow-hidden">
+          {/* Header */}
+          <div className="relative h-44 w-full overflow-hidden">
             <img
               src={booking.mallImage}
               alt="mall"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
 
-            <div className="absolute bottom-4 left-5">
+            <div className="absolute bottom-5 left-5">
               <h2 className="text-2xl font-semibold tracking-wide">
                 {booking.mall}
               </h2>
@@ -57,13 +63,18 @@ const TicketQR = () => {
             </div>
           </div>
 
-          {/* Content */}
-          <div className="p-6 space-y-6">
+          {/* Body */}
+          <div className="p-6 space-y-6 relative">
 
-            {/* Slot Info */}
+            {/* Floating Ticket Badge */}
+            <div className="absolute -top-5 right-6 bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-1 rounded-full text-xs font-semibold shadow-lg">
+              #{booking.ticketNo}
+            </div>
+
+            {/* Slot + Time */}
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm text-gray-400">
+                <p className="text-xs text-gray-400">
                   Parking Slot
                 </p>
                 <h3 className="text-3xl font-semibold mt-1">
@@ -72,7 +83,7 @@ const TicketQR = () => {
               </div>
 
               <div className="text-right">
-                <p className="text-sm text-gray-400">
+                <p className="text-xs text-gray-400">
                   Entry Time
                 </p>
                 <h3 className="text-lg font-medium mt-1">
@@ -81,39 +92,43 @@ const TicketQR = () => {
               </div>
             </div>
 
-            {/* QR Section */}
-            <div className="flex justify-center">
-              <div className="bg-white p-4 rounded-2xl shadow-xl">
+            {/* Glowing QR Section */}
+            <div className="flex justify-center relative">
+
+              <div className="absolute w-52 h-52 bg-purple-500/30 blur-3xl rounded-full animate-pulse"></div>
+
+              <div className="relative bg-white p-4 rounded-2xl shadow-2xl">
                 <QRCodeCanvas
                   value={booking.ticketNo.toString()}
                   size={170}
                 />
               </div>
-            </div>
 
-            {/* Ticket Info */}
-            <div className="text-center">
-              <p className="text-xs text-gray-500">
-                Ticket No
-              </p>
-              <p className="tracking-widest text-sm mt-1">
-                {booking.ticketNo}
-              </p>
             </div>
 
             {/* Amount */}
             <div className="flex justify-between items-center pt-4 border-t border-white/10">
-              <p className="text-gray-400">
-                Total Amount
+              <p className="text-gray-400 text-sm">
+                Total Paid
               </p>
               <p className="text-lg font-semibold">
                 ₹ {booking.amount}
               </p>
             </div>
 
+            {/* Navigate Button */}
+            <button
+              onClick={() =>
+                navigate("/navigate", { state: { booking } })
+              }
+              className="w-full py-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 font-medium hover:scale-105 transition-transform duration-300"
+            >
+              Navigate to Mall
+            </button>
+
           </div>
 
-          {/* Bottom Buttons */}
+          {/* Bottom Actions */}
           <div className="flex gap-4 p-4 bg-black/40">
 
             <button
