@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Splash from "./pages/Splash";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -7,12 +8,15 @@ import Payment from "./pages/Payment";
 import Success from "./pages/Success";
 import TicketQR from "./pages/TicketQR";
 import MyBookings from "./pages/MyBookings";
-import Navigate from "./pages/Navigate";
+import NavigatePage from "./pages/Navigate";
 import MainLayout from "./layouts/MainLayout";
 
 function App() {
   return (
     <Routes>
+
+      {/* Splash First */}
+      <Route path="/" element={<Splash />} />
 
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
@@ -68,10 +72,10 @@ function App() {
       <Route path="/ticket" element={<TicketQR />} />
 
       {/* Navigate Screen */}
-      <Route path="/navigate" element={<Navigate />} />
+      <Route path="/navigate" element={<NavigatePage />} />
 
-      {/* Default */}
-      <Route path="*" element={<Login />} />
+      {/* Fallback → Redirect to Splash */}
+      <Route path="*" element={<Navigate to="/" replace />} />
 
     </Routes>
   );
