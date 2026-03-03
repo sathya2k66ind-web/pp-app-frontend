@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Chrome, Facebook, Apple, Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -13,121 +15,132 @@ export default function Login() {
     setTimeout(() => setAnimate(true), 200);
   }, []);
 
+  const handleSocialLogin = (platform) => {
+    setLoading(true);
+    console.log(`Connecting to ${platform} protocol...`);
+    setTimeout(() => {
+      navigate("/dashboard");
+    }, 2000);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) return;
     setLoading(true);
-
-    // Transition to dashboard - matching the "Unlocked" theme
     setTimeout(() => {
       navigate("/dashboard");
     }, 1500);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#001F3F] relative overflow-hidden text-white font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-[#000d1a] relative overflow-hidden text-white font-sans p-6">
+      
+      {/* 1. DYNAMIC BACKGROUND NODES */}
+      <div className="absolute w-[600px] h-[600px] bg-[#00FFFF]/5 rounded-full blur-[140px] -top-20 -left-20 animate-pulse"></div>
+      <div className="absolute w-[400px] h-[400px] bg-[#00FFFF]/5 rounded-full blur-[100px] -bottom-20 -right-20"></div>
 
-      {/* Background Glow - Slotify Cyan */}
-      <div className="absolute w-[500px] h-[500px] bg-[#00FFFF]/10 rounded-full blur-[120px] animate-pulse"></div>
-
-      {/* Floating particles - Unlocked nodes */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-[#00FFFF]/30 rounded-full"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              boxShadow: '0 0 10px #00FFFF',
-              animation: `float ${3 + Math.random() * 5}s infinite ease-in-out`
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Login Card - Glassmorphism */}
-      <div
-        className={`relative bg-white/5 backdrop-blur-2xl border border-white/10 w-full max-w-md rounded-[2.5rem] p-12 shadow-2xl transition-all duration-1000 ease-out ${
-          animate ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-        }`}
+      {/* 2. MAIN LOGIN CONTAINER */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={animate ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8 }}
+        className="relative bg-white/[0.03] backdrop-blur-3xl border border-white/10 w-full max-w-md rounded-[3rem] p-8 md:p-12 shadow-2xl z-10"
       >
-
-        {/* Triple Threat Logo Integration */}
-        <div className="flex flex-col items-center mb-10">
-          <div className="relative w-20 h-20 mb-4 flex items-center justify-center">
-             {/* The "O" Icon */}
-             <div className="w-16 h-16 border-4 border-[#00FFFF] rounded-full flex items-center justify-center relative shadow-[0_0_20px_rgba(0,255,255,0.3)]">
-                {/* Headphone/Lock Arch */}
-                <div className="absolute -top-5 w-10 h-8 border-t-2 border-l-2 border-r-2 border-[#00FFFF] rounded-t-full">
-                   <div className="absolute -top-1 right-1.5 w-1.5 h-2 bg-[#051a2e]" /> {/* The Gap */}
-                </div>
-                {/* Car Silhouette */}
-                <div className="w-5 h-8 bg-white rounded-sm relative">
-                   <div className="absolute top-1.5 left-0.5 right-0.5 h-2.5 bg-[#001F3F] rounded-xs" />
-                </div>
+        {/* LOGO SECTION */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-16 h-16 border-2 border-[#00FFFF]/30 rounded-2xl flex items-center justify-center relative mb-4 rotate-45 group hover:rotate-90 transition-transform duration-500">
+             <div className="-rotate-45 group-hover:-rotate-90 transition-transform duration-500 text-[#00FFFF]">
+               <ShieldCheck size={32} />
              </div>
           </div>
-          
-          <h1 className="text-3xl font-black tracking-tighter text-white">
-            slotify
+          <h1 className="text-3xl font-black tracking-tighter uppercase italic leading-none">
+            Slotify<span className="text-[#00FFFF]">.</span>
           </h1>
-          <p className="text-[#00FFFF] text-[10px] uppercase tracking-[0.5em] mt-2 font-light">
-            The City, Unlocked.
-          </p>
+          <p className="text-zinc-500 text-[9px] font-black uppercase tracking-[0.4em] mt-2">Biometric Entry Protocol</p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
+        {/* 3. FORM SECTION */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative group">
+            <Mail className="absolute left-4 top-4 text-zinc-500 group-focus-within:text-[#00FFFF] transition-colors" size={18} />
             <input
               type="email"
-              placeholder="Email Address"
+              placeholder="NETWORK EMAIL"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#00FFFF] focus:bg-white/10 text-white placeholder-gray-500 transition-all duration-300"
+              className="w-full pl-12 pr-5 py-4 rounded-2xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#00FFFF]/50 focus:bg-[#00FFFF]/5 text-sm font-bold tracking-widest placeholder-zinc-600 transition-all"
             />
+          </div>
 
+          <div className="relative group">
+            <Lock className="absolute left-4 top-4 text-zinc-500 group-focus-within:text-[#00FFFF] transition-colors" size={18} />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="ACCESS CODE"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#00FFFF] focus:bg-white/10 text-white placeholder-gray-500 transition-all duration-300"
+              className="w-full pl-12 pr-5 py-4 rounded-2xl bg-white/5 border border-white/10 focus:outline-none focus:border-[#00FFFF]/50 focus:bg-[#00FFFF]/5 text-sm font-bold tracking-widest placeholder-zinc-600 transition-all"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full bg-[#00FFFF] text-[#001F3F] py-4 rounded-2xl font-bold overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,255,0.4)] active:scale-95"
+            className="w-full bg-[#00FFFF] text-black py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,255,0.3)] transition-all active:scale-95 disabled:opacity-50"
           >
-            <span className="relative z-10">
-              {loading ? "UNLOCKING SPOT..." : "ACCESS CITY"}
-            </span>
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+            {loading ? "Decrypting..." : "Initialize Session"}
+            {!loading && <ArrowRight size={16} />}
           </button>
         </form>
 
-        <div className="mt-8 flex justify-between items-center text-xs text-gray-500">
-          <span className="hover:text-white cursor-pointer transition">Forgot Access?</span>
-          <span
-            onClick={() => navigate("/register")}
-            className="text-[#00FFFF] cursor-pointer font-bold hover:brightness-125 transition"
-          >
-            Get the Key
-          </span>
+        {/* 4. SOCIAL AUTH SEPARATOR */}
+        <div className="relative my-10">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-white/5"></div>
+          </div>
+          <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.3em]">
+            <span className="bg-[#000d1a] px-4 text-zinc-600">External Handshake</span>
+          </div>
         </div>
 
-      </div>
+        {/* 5. SOCIAL GRID */}
+        <div className="grid grid-cols-3 gap-4 mb-10">
+          {[
+            { name: "Google", icon: <Chrome size={20} />, id: "google" },
+            { name: "Facebook", icon: <Facebook size={20} />, id: "fb" },
+            { name: "Apple", icon: <Apple size={20} />, id: "apple" }
+          ].map((social) => (
+            <motion.button
+              key={social.id}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => handleSocialLogin(social.id)}
+              className="flex items-center justify-center h-14 rounded-2xl bg-white/[0.03] border border-white/10 text-white/40 hover:text-[#00FFFF] hover:border-[#00FFFF]/30 hover:bg-[#00FFFF]/5 transition-all"
+            >
+              {social.icon}
+            </motion.button>
+          ))}
+        </div>
 
-      {/* Inline styles for the custom particle animation */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0) translateX(0); }
-          50% { transform: translateY(-20px) translateX(10px); }
-        }
-      `}</style>
+        {/* FOOTER LINKS */}
+        <div className="flex flex-col items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+          <p className="text-zinc-600">
+            No Access Key? 
+            <span 
+              onClick={() => navigate("/register")}
+              className="ml-2 text-[#00FFFF] cursor-pointer hover:underline"
+            >
+              Generate One
+            </span>
+          </p>
+          <span className="text-zinc-700 cursor-pointer hover:text-zinc-400 transition">Troubleshoot Link</span>
+        </div>
+      </motion.div>
+
+      {/* FOOTER BRANDING */}
+      <p className="absolute bottom-8 text-[9px] font-black uppercase tracking-[0.8em] text-zinc-800 pointer-events-none">
+        Secure Grid OS v4.0.2
+      </p>
     </div>
   );
 }
