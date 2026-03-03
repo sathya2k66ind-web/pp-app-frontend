@@ -1,17 +1,17 @@
 import React from "react";
-// 🛑 THESE ARE THE IMPORTS THAT WERE MISSING 🛑
+// 🛑 ALL CRITICAL IMPORTS ADDED HERE 🛑
 import { NavLink, useNavigate, useLocation } from "react-router-dom"; 
 import { Zap, Ticket, MapPin, User } from "lucide-react";
 
 const BottomNavigation = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // This was the "undefined" error
   const location = useLocation();
 
   const navItems = [
-    { to: "/dashboard", icon: Zap, label: "Live" },
-    { to: "/my-bookings", icon: Ticket, label: "Tickets" },
-    { to: "/navigate", icon: MapPin, label: "Map" },
-    { to: "/profile", icon: User, label: "Profile" },
+    { to: "/dashboard", icon: Zap },
+    { to: "/my-bookings", icon: Ticket },
+    { to: "/navigate", icon: MapPin },
+    { to: "/profile", icon: User },
   ];
 
   return (
@@ -28,7 +28,6 @@ const BottomNavigation = () => {
               isActive ? "text-[#00FFFF]" : "text-zinc-500 hover:text-white"
             }`}
           >
-            {/* Neon Glow background for active state */}
             {isActive && (
               <div className="absolute inset-0 bg-[#00FFFF]/10 blur-lg rounded-full animate-pulse" />
             )}
@@ -39,7 +38,6 @@ const BottomNavigation = () => {
               fill={isActive ? "currentColor" : "none"} 
             />
 
-            {/* Small indicator dot below */}
             {isActive && (
               <div className="absolute -bottom-1 w-1 h-1 bg-[#00FFFF] rounded-full shadow-[0_0_10px_#00FFFF]" />
             )}
