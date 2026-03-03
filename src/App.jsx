@@ -9,12 +9,12 @@ import Success from "./pages/Success";
 import TicketQR from "./pages/TicketQR";
 import MyBookings from "./pages/MyBookings";
 import NavigatePage from "./pages/Navigate";
+import Profile from "./pages/Profile"; // 👈 New Import
 import MainLayout from "./layouts/MainLayout";
 
 function App() {
   return (
     <Routes>
-
       {/* Splash First */}
       <Route path="/" element={<Splash />} />
 
@@ -68,6 +68,16 @@ function App() {
         }
       />
 
+      {/* Profile Route - Wrapped in MainLayout for the HUD Nav */}
+      <Route
+        path="/profile"
+        element={
+          <MainLayout>
+            <Profile />
+          </MainLayout>
+        }
+      />
+
       {/* Full Screen Ticket */}
       <Route path="/ticket" element={<TicketQR />} />
 
@@ -76,7 +86,6 @@ function App() {
 
       {/* Fallback → Redirect to Splash */}
       <Route path="*" element={<Navigate to="/" replace />} />
-
     </Routes>
   );
 }

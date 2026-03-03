@@ -82,9 +82,17 @@ const Dashboard = () => {
           </span>
         </div>
         <div className="flex gap-4 items-center">
-          <div onClick={handleLogout} className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden cursor-pointer shadow-[0_0_15px_rgba(0,255,255,0.2)]">
+          {/* Linked to Profile.jsx */}
+          <div 
+            onClick={() => navigate("/profile")} 
+            className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden cursor-pointer shadow-[0_0_15px_rgba(0,255,255,0.2)] hover:scale-105 transition-transform"
+          >
             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Slotify" alt="User" />
           </div>
+          {/* Logout functionality */}
+          <button onClick={handleLogout} className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">
+            Exit
+          </button>
         </div>
       </nav>
 
@@ -147,7 +155,15 @@ const Dashboard = () => {
                 
                 <div className="flex gap-5 items-center">
                   <div className="relative w-20 h-20 shrink-0">
-                    <img src={mall.image} className="w-full h-full object-cover rounded-3xl grayscale-[50%] group-hover:grayscale-0 transition-all duration-500 shadow-lg border border-white/10" alt={mall.name} />
+                    <img 
+                      src={mall.image} 
+                      className="w-full h-full object-cover rounded-3xl grayscale-[50%] group-hover:grayscale-0 transition-all duration-500 shadow-lg border border-white/10" 
+                      alt={mall.name} 
+                      // 🛡️ Error Fallback to prevent broken icons
+                      onError={(e) => {
+                        e.target.src = "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=600";
+                      }}
+                    />
                     <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-[#000d1a] ${isBusy ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]"}`} />
                   </div>
 
