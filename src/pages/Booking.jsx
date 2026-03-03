@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Cpu, Clock, Layers, Zap, Info } from "lucide-react";
+import { ChevronLeft, Cpu, Clock, Layers, Zap } from "lucide-react";
 
 export default function Booking() {
   const navigate = useNavigate();
@@ -62,7 +62,14 @@ export default function Booking() {
 
   const handleContinue = () => {
     navigate("/payment", {
-      state: { mall: mall.name, slot: selectedSlot, entryTime: formatTime(entryMinutes), exitTime: formatTime(exitMinutes), duration }
+      state: { 
+        mall: mall.name, 
+        slot: selectedSlot, 
+        entryTime: formatTime(entryMinutes), 
+        exitTime: formatTime(exitMinutes), 
+        duration,
+        amount: 120 // Passing the default amount for the payment screen
+      }
     });
   };
 
@@ -87,7 +94,7 @@ export default function Booking() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#000d1a]/20 via-[#000d1a]/60 to-[#000d1a]"></div>
 
-        <div className="absolute top-12 left-6 right-6 flex justify-between items-center">
+        <div className="absolute top-12 left-6 right-6 flex justify-between items-center text-white">
           <button 
             onClick={() => navigate(-1)}
             className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 backdrop-blur-md"
@@ -101,9 +108,10 @@ export default function Booking() {
         </div>
 
         <div className="absolute bottom-10 left-8">
+          {/* FIXED: Added closing tag for h1 */}
           <h1 className="text-4xl font-black tracking-tighter italic uppercase leading-none">
             {mall.name}
-          </h2>
+          </h1>
           <div className="flex items-center gap-2 mt-2">
             <div className="w-2 h-2 rounded-full bg-[#00FFFF] animate-ping" />
             <p className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">Grid Synchronization</p>
@@ -243,7 +251,14 @@ export default function Booking() {
                 : "bg-white/5 text-zinc-700 border border-white/5"
             }`}
           >
-            {selectedSlot ? <><Zap size={16} fill="currentColor" /> Initialize {selectedSlot}</> : "Awaiting Selection"}
+            {selectedSlot ? (
+              <>
+                <Zap size={16} fill="currentColor" /> 
+                Initialize {selectedSlot}
+              </>
+            ) : (
+              "Awaiting Selection"
+            )}
           </motion.button>
         </div>
 
