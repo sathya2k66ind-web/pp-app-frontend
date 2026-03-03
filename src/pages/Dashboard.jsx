@@ -2,16 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Ticket, MapPin, Zap, Star, Bell, Search, Music, Trophy, ChevronRight } from "lucide-react";
-import { api } from "../api/api"; // Ensure this path points to your api.js
-import { logoutUser } from "../api/auth"; // Ensure this path points to your auth.js
+import { api } from "../api/api"; 
+import { logoutUser } from "../api/auth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
-  const [malls, setMalls] = useState([]); // Now dynamic
+  const [malls, setMalls] = useState([]); 
   const [loading, setLoading] = useState(true);
 
-  // 🏙️ REFINED LIVE EVENTS (Can also be moved to backend later)
   const liveEvents = [
     {
       id: 1,
@@ -42,11 +41,9 @@ const Dashboard = () => {
     }
   ];
 
-  // 🔄 FETCH LIVE DATA FROM RENDER
   useEffect(() => {
     const fetchMalls = async () => {
       try {
-        // Change '/slots' to your actual backend endpoint for mall data
         const response = await api.get("/api/slots"); 
         setMalls(response.data);
       } catch (error) {
@@ -82,7 +79,8 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#000d1a] text-white pb-32 font-sans overflow-x-hidden">
+    // Changed pb-32 to pb-20 to align with the permanent bottom bar
+    <div className="min-h-screen bg-[#000d1a] text-white pb-20 font-sans overflow-x-hidden relative">
       
       {/* 1. TOP NAVIGATION */}
       <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-xl border-b border-white/5">
@@ -97,7 +95,6 @@ const Dashboard = () => {
             <Bell size={20} />
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#00FFFF] rounded-full animate-pulse shadow-[0_0_10px_#00FFFF]" />
           </div>
-          {/* Profile Icon triggers Logout */}
           <div 
             onClick={handleLogout}
             className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden shadow-lg cursor-pointer hover:scale-105 transition-transform"
@@ -159,7 +156,7 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* 4. UNLOCKED MALLS (NOW DYNAMIC) */}
+      {/* 4. UNLOCKED MALLS */}
       <section className="px-6 mt-12">
         <div className="flex justify-between items-center mb-6 px-1">
           <h2 className="text-sm font-black uppercase tracking-widest">Unlocked Malls</h2>
@@ -169,7 +166,7 @@ const Dashboard = () => {
         <div className="space-y-4">
           {malls.length > 0 ? malls.map((mall, idx) => (
             <motion.div
-              key={mall.id || idx}
+              key={mall._id || idx}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.1 }}
@@ -178,7 +175,15 @@ const Dashboard = () => {
               className="group bg-white/[0.03] border border-white/5 rounded-[2.2rem] p-4 flex items-center gap-5 hover:bg-white/[0.08] hover:border-[#00FFFF]/20 transition-all cursor-pointer"
             >
               <div className="relative w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0 border border-white/10">
-                <img src={mall.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 grayscale-[30%] group-hover:grayscale-0" alt={mall.name} />
+                <img 
+                  // Logic to fix UB City image if the DB link is broken
+                  src={mall.name === "UB City Mall" && mall.image.includes("...") 
+                    ? "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop" 
+                    : mall.image
+                  } 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 grayscale-[30%] group-hover:grayscale-0" 
+                  alt={mall.name} 
+                />
               </div>
               
               <div className="flex-1">
@@ -201,23 +206,7 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* 5. THE SINGLE GLASS DOCK */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-20 bg-black/50 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 flex justify-around items-center px-6 z-[100] shadow-[0_25px_50px_rgba(0,0,0,0.6)]">
-        <button className="flex flex-col items-center gap-1 text-[#00FFFF]">
-          <div className="p-3 bg-[#00FFFF]/10 rounded-full shadow-[0_0_20px_rgba(0,255,255,0.1)]">
-            <Zap size={24} fill="currentColor" />
-          </div>
-        </button>
-        <button className="p-3 text-gray-500 hover:text-white transition-colors">
-          <Ticket size={24} />
-        </button>
-        <button className="p-3 text-gray-500 hover:text-white transition-colors">
-          <MapPin size={24} />
-        </button>
-        <button className="p-3 text-gray-500 hover:text-white transition-colors">
-          <Star size={24} />
-        </button>
-      </div>
+      {/* Floating Glass Dock was removed to fix double dashboard issue */}
     </div>
   );
 };
