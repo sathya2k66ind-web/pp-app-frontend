@@ -9,4 +9,4 @@ const MainLayout = ({ children }) => {
   );
 };
 
-export default MainLayout; now remove the bottom bar or maybe replace it with a design thagt matches the app ui/ux with glow and glass finish
+export default MainLayout; 
