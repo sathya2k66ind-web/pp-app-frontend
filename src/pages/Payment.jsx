@@ -1,84 +1,66 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // Added useLocation to pull real data
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle,
   CreditCard,
   Smartphone,
   Landmark,
-  Wallet,
   Lock,
   Unlock,
   ChevronLeft,
   ShieldCheck,
-  Zap
+  CircleDot
 } from "lucide-react";
 
 const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedMethod, setSelectedMethod] = useState("upi");
+  const [selectedMethod, setSelectedMethod] = useState("gpay");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Pulling amount from Booking state or defaulting to 120
+  // Pulling state from Booking.jsx
   const bookingData = location.state || {};
   const amount = bookingData.amount || 120;
 
   const paymentMethods = [
-    { id: "upi", label: "UPI Instant", icon: <Smartphone size={18} />, provider: "PhonePe / GPay" },
-    { id: "card", label: "Debit/Credit Card", icon: <CreditCard size={18} />, provider: "Visa / Master" },
-    { id: "netbanking", label: "Net Banking", icon: <Landmark size={18} />, provider: "All Major Banks" },
-    { id: "wallet", label: "Slotify Credits", icon: <Wallet size={18} />, provider: "Internal Balance" },
+    { id: "gpay", label: "Google Pay", icon: <Smartphone size={20} />, provider: "Instant UPI Transfer" },
+    { id: "upi", label: "Other UPI", icon: <Smartphone size={20} />, provider: "PhonePe / Paytm" },
+    { id: "card", label: "Debit/Credit Card", icon: <CreditCard size={20} />, provider: "Visa / Mastercard / Amex" },
+    { id: "netbanking", label: "Net Banking", icon: <Landmark size={20} />, provider: "All Major Indian Banks" },
   ];
 
   const handlePayment = () => {
     setLoading(true);
-    // Simulation of a secure handshake
     setTimeout(() => {
       setLoading(false);
       setSuccess(true);
       setTimeout(() => {
-        // Pass the booking data along to the Ticket page
+        // Navigating to TicketQR with structured state
         navigate("/ticket", { state: { booking: bookingData } });
-      }, 2800);
-    }, 2500);
+      }, 2500);
+    }, 2000);
   };
 
-  // ✅ UPGRADED SUCCESS SCREEN (THE "GRID ACTIVATION")
   if (success) {
     return (
-      <div className="min-h-screen bg-[#000d1a] flex flex-col items-center justify-center relative overflow-hidden p-6 text-white">
-        {/* Radiating Pulse Waves */}
-        {[1, 2, 3].map((i) => (
-          <motion.div
-            key={i}
-            initial={{ scale: 0.5, opacity: 0.5 }}
-            animate={{ scale: 2.5, opacity: 0 }}
-            transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
-            className="absolute w-64 h-64 border border-[#00FFFF] rounded-full"
-          />
-        ))}
-
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-slate-900">
         <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
+          initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="relative z-10 text-center space-y-8"
+          className="bg-white p-10 rounded-[2.5rem] shadow-xl text-center space-y-6 border border-slate-100"
         >
-          <div className="relative inline-block">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-4 border border-dashed border-[#00FFFF]/30 rounded-full"
-            />
-            <div className="w-28 h-28 bg-[#00FFFF] rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(0,255,255,0.5)]">
-              <Unlock size={48} className="text-[#000d1a]" />
-            </div>
+          <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-200">
+            <Unlock size={40} className="text-white" />
           </div>
-
-          <div className="space-y-3">
-            <h2 className="text-4xl font-black tracking-tighter uppercase italic leading-none">Security Verified</h2>
-            <p className="text-[#00FFFF] text-[10px] tracking-[0.5em] font-black uppercase">Syncing Grid {bookingData.slot || "A1"}</p>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Payment Confirmed</h2>
+            <p className="text-slate-500 text-sm">Your spot at <span className="font-bold text-slate-700">{bookingData.mall || "Broadway"}</span> is secured.</p>
+          </div>
+          <div className="pt-4">
+             <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full text-emerald-700 text-xs font-bold uppercase tracking-wider">
+               Slot {bookingData.slot || "A1"} Reserved
+             </div>
           </div>
         </motion.div>
       </div>
@@ -86,133 +68,118 @@ const Payment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#000d1a] text-white flex flex-col p-6 font-sans overflow-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans">
       
-      {/* 1. TOP NAVIGATION */}
-      <div className="flex justify-between items-center mb-10 pt-4">
+      {/* HEADER */}
+      <div className="flex justify-between items-center p-6 pt-8">
         <button 
           onClick={() => navigate(-1)}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10"
+          className="w-11 h-11 flex items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-200 text-slate-600"
         >
           <ChevronLeft size={20} />
         </button>
-        <div className="flex items-center gap-2">
-          <ShieldCheck size={16} className="text-[#00FFFF]" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00FFFF]">SSL Secure</span>
+        <div className="flex flex-col items-end">
+          <div className="flex items-center gap-1.5 text-emerald-600">
+            <ShieldCheck size={14} />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Secure Checkout</span>
+          </div>
+          <span className="text-[9px] text-slate-400 font-medium">PCI-DSS COMPLIANT</span>
         </div>
-        <div className="w-10" /> {/* Spacer */}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-lg mx-auto space-y-8"
-      >
-        <div className="text-center space-y-1">
-          <h2 className="text-sm font-black uppercase tracking-[0.4em] text-zinc-500">Checkout Protocol</h2>
-          <p className="text-3xl font-black italic tracking-tighter">FINALIZE BOOKING</p>
+      <div className="px-6 pb-10 w-full max-w-lg mx-auto flex-1 flex flex-col">
+        <div className="mb-8 mt-4">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Confirm Booking</h1>
+          <p className="text-slate-500 text-sm mt-1">Choose your preferred payment method</p>
         </div>
 
-        {/* 2. LEDGER CARD */}
-        <div className="relative p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/10 overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
-            <Zap size={80} className="text-[#00FFFF]" />
-          </div>
+        {/* PRICE SUMMARY CARD */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 mb-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16" />
           
-          <div className="relative z-10 flex flex-col items-center">
-            <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2">Service Fee Total</span>
+          <div className="relative z-10">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-1">Total Payable</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-sm font-bold text-[#00FFFF] opacity-50">₹</span>
-              <span className="text-6xl font-black tracking-tighter tabular-nums">
-                {amount}<span className="text-xl text-[#00FFFF]">.00</span>
+              <span className="text-2xl font-semibold text-slate-400">₹</span>
+              <span className="text-5xl font-black text-slate-900 tracking-tighter">
+                {amount}<span className="text-2xl opacity-30">.00</span>
               </span>
             </div>
-            <div className="mt-4 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-zinc-400">
-              SLOT: <span className="text-[#00FFFF]">{bookingData.slot || "A1"}</span> • {bookingData.mall || "BROADWAY"}
+            
+            <div className="mt-6 flex items-center gap-3 pt-6 border-t border-slate-50">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
+                    {bookingData.mall?.charAt(0) || "B"}
+                </div>
+                <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Parking Location</p>
+                    <p className="text-sm font-bold text-slate-800">{bookingData.mall || "Broadway Mall"} • Slot {bookingData.slot || "A1"}</p>
+                </div>
             </div>
           </div>
         </div>
 
-        {/* 3. PAYMENT SELECTION */}
-        <div className="space-y-3">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-2">Gateway Selection</h3>
+        {/* PAYMENT OPTIONS */}
+        <div className="space-y-3 mb-10">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Payment Methods</h3>
           <div className="grid grid-cols-1 gap-3">
             {paymentMethods.map((method) => (
-              <motion.button
+              <button
                 key={method.id}
-                whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedMethod(method.id)}
-                className={`group flex items-center justify-between p-5 rounded-[1.8rem] border transition-all duration-300 ${
+                className={`flex items-center justify-between p-4 rounded-3xl border transition-all duration-200 ${
                   selectedMethod === method.id
-                    ? "border-[#00FFFF] bg-[#00FFFF]/5 shadow-[0_10px_30px_rgba(0,255,255,0.1)]"
-                    : "border-white/5 bg-white/[0.02] hover:bg-white/5"
+                    ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500"
+                    : "border-slate-200 bg-white hover:border-slate-300"
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
-                    selectedMethod === method.id ? "bg-[#00FFFF] text-[#000d1a]" : "bg-white/5 text-zinc-500"
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                    selectedMethod === method.id ? "bg-blue-500 text-white shadow-md shadow-blue-100" : "bg-slate-100 text-slate-400"
                   }`}>
                     {method.icon}
                   </div>
                   <div className="text-left">
-                    <p className={`text-sm font-black uppercase ${selectedMethod === method.id ? "text-white" : "text-zinc-400"}`}>
-                      {method.label}
-                    </p>
-                    <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-tighter">{method.provider}</p>
+                    <p className="text-sm font-bold text-slate-800">{method.label}</p>
+                    <p className="text-[10px] font-medium text-slate-500">{method.provider}</p>
                   </div>
                 </div>
-
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                  selectedMethod === method.id ? "border-[#00FFFF]" : "border-white/10"
-                }`}>
-                  {selectedMethod === method.id && (
-                    <motion.div layoutId="dot" className="w-2.5 h-2.5 bg-[#00FFFF] rounded-full shadow-[0_0_10px_#00FFFF]" />
-                  )}
+                <div className={selectedMethod === method.id ? "text-blue-500" : "text-slate-200"}>
+                  <CircleDot size={22} fill={selectedMethod === method.id ? "currentColor" : "none"} />
                 </div>
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>
 
-        {/* 4. CTA FOOTER */}
-        <div className="pt-4 space-y-4">
+        {/* ACTION BUTTON */}
+        <div className="mt-auto pt-6">
           <motion.button
-            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handlePayment}
             disabled={loading}
-            className={`w-full py-5 rounded-[2rem] text-sm font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden ${
+            className={`w-full py-5 rounded-3xl text-sm font-bold uppercase tracking-widest shadow-xl transition-all ${
               loading
-                ? "bg-zinc-800 text-zinc-500"
-                : "bg-[#00FFFF] text-[#000d1a] shadow-[0_20px_40px_rgba(0,255,255,0.25)]"
+                ? "bg-slate-200 text-slate-400"
+                : "bg-slate-900 text-white shadow-slate-200"
             }`}
           >
-            <AnimatePresence mode="wait">
-              {loading ? (
-                <motion.div 
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  className="flex items-center justify-center gap-3"
-                >
-                  <div className="w-4 h-4 border-2 border-[#000d1a] border-t-transparent rounded-full animate-spin"></div>
-                  Verifying Gateway...
-                </motion.div>
-              ) : (
-                <motion.div 
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  className="flex items-center justify-center gap-2"
-                >
-                  <Lock size={16} fill="currentColor" />
-                  Initialize Payment
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {loading ? (
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Processing...
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <Lock size={16} />
+                Pay ₹{amount}.00 Now
+              </div>
+            )}
           </motion.button>
-          
-          <p className="text-center text-[9px] text-zinc-600 font-bold uppercase tracking-widest">
-            Encryption: AES-256 Bit • v4.0.2 Compliance
+          <p className="text-center text-[10px] text-slate-400 font-medium mt-6 uppercase tracking-wider">
+            Safe & Secure Checkout • encrypted by Slotify
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
