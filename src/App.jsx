@@ -12,73 +12,73 @@ import NavigatePage from "./pages/Navigate";
 import MainLayout from "./layouts/MainLayout";
 
 function App() {
-  return (
-    <Routes>
+  return (
+    <Routes>
 
-      {/* Splash First */}
-      <Route path="/" element={<Splash />} />
+      {/* Splash First */}
+      <Route path="/" element={<Splash />} />
 
-      {/* Auth Routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      {/* Auth Routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-      {/* Main App Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
-        }
-      />
+      {/* Main App Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <MainLayout>
+            <Dashboard />
+          </MainLayout>
+        }
+      />
 
-      <Route
-        path="/booking"
-        element={
-          <MainLayout>
-            <Booking />
-          </MainLayout>
-        }
-      />
+      <Route
+        path="/booking"
+        element={
+          <MainLayout>
+            <Booking />
+          </MainLayout>
+        }
+      />
 
-      <Route
-        path="/payment"
-        element={
-          <MainLayout>
-            <Payment />
-          </MainLayout>
-        }
-      />
+      <Route
+        path="/payment"
+        element={
+          <MainLayout>
+            <Payment />
+          </MainLayout>
+        }
+      />
 
-      <Route
-        path="/success"
-        element={
-          <MainLayout>
-            <Success />
-          </MainLayout>
-        }
-      />
+      <Route
+        path="/success"
+        element={
+          <MainLayout>
+            <Success />
+          </MainLayout>
+        }
+      />
 
-      <Route
-        path="/my-bookings"
-        element={
-          <MainLayout>
-            <MyBookings />
-          </MainLayout>
-        }
-      />
+      <Route
+        path="/my-bookings"
+        element={
+          <MainLayout>
+            <MyBookings />
+          </MainLayout>
+        }
+      />
 
-      {/* Full Screen Ticket */}
-      <Route path="/ticket" element={<TicketQR />} />
+      {/* Full Screen Ticket */}
+      <Route path="/ticket" element={<TicketQR />} />
 
-      {/* Navigate Screen */}
-      <Route path="/navigate" element={<NavigatePage />} />
+      {/* Navigate Screen */}
+      <Route path="/navigate" element={<NavigatePage />} />
 
-      {/* Fallback → Redirect to Splash */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Fallback → Redirect to Splash */}
+      <Route path="*" element={<Navigate to="/" replace />} />
 
-    </Routes>
-  );
+    </Routes>
+  );
 }
 
 export default App;
