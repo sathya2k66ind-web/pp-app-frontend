@@ -1,34 +1,27 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { Zap, Ticket, MapPin, Star } from "lucide-react";
+import BottomNavigation from "../components/BottomNavigation";
 
-const BottomNavigation = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const navItems = [
-    { icon: <Zap size={24} />, path: "/dashboard" },
-    { icon: <Ticket size={24} />, path: "/my-bookings" },
-    { icon: <MapPin size={24} />, path: "/navigate" },
-    { icon: <Star size={24} />, path: "/profile" },
-  ];
-
+const MainLayout = ({ children }) => {
   return (
-    <div className="flex justify-around items-center h-16">
-      {navItems.map((item) => (
-        <button
-          key={item.path}
-          onClick={() => navigate(item.path)}
-          className={`p-3 transition-all duration-300 rounded-full ${
-            location.pathname === item.path 
-            ? "text-[#00FFFF] bg-[#00FFFF]/10 shadow-[0_0_15px_rgba(0,255,255,0.3)]" 
-            : "text-gray-500 hover:text-white"
-          }`}
-        >
-          {item.icon}
-        </button>
-      ))}
+    <div className="relative min-h-screen bg-[#000d1a] text-white overflow-x-hidden">
+      {/* Main Content Area: 
+         We use pb-28 to make sure content doesn't get stuck behind the dock.
+      */}
+      <main className="relative z-10 pb-28">
+        {children}
+      </main>
+
+      {/* THE PREMIUM GLASS DOCK:
+         - Fixed position at the bottom center.
+         - backdrop-blur-2xl creates the "Frosted Glass" look.
+         - border-white/10 adds a subtle edge highlight.
+      */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-[100] px-4">
+        <div className="bg-black/30 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_20px_rgba(0,255,255,0.05)]">
+          <BottomNavigation />
+        </div>
+      </div>
     </div>
   );
 };
 
-export default BottomNavigation;
+export default MainLayout;
