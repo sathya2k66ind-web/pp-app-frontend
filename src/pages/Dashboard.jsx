@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Ticket, MapPin, Zap, Star, Bell, Search, Music, Trophy, ChevronRight, Activity, layout } from "lucide-react";
+import { Zap, Star, Bell, Search, Music, Trophy, ChevronRight, Activity, MapPin } from "lucide-react";
 import { api } from "../api/api"; 
 import { logoutUser } from "../api/auth";
 
@@ -15,20 +15,20 @@ const Dashboard = () => {
     {
       id: 1,
       title: "Neon Midnight Sale",
-      location: "Phoenix Marketcity",
+      location: "Phoenix Mall of Asia",
       tag: "50% OFF",
       icon: <Zap size={18} fill="currentColor" />,
-      color: "from-purple-600/40 to-blue-500/40",
+      color: "from-purple-600/30 to-blue-500/30",
       image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=800"
     },
     {
       id: 2,
-      title: "Underground Jazz Fest",
-      location: "UB City Arena",
-      tag: "LIVE NOW",
-      icon: <Music size={18} fill="currentColor" />,
-      color: "from-orange-600/40 to-red-500/40",
-      image: "https://images.unsplash.com/photo-1514525253344-7814d999d641?auto=format&fit=crop&q=80&w=800"
+      title: "E-Sports Qualifiers",
+      location: "Nexus Mall",
+      tag: "TOURNAMENT",
+      icon: <Trophy size={18} fill="currentColor" />,
+      color: "from-green-600/30 to-cyan-500/30",
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
     }
   ];
 
@@ -73,10 +73,10 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden relative">
       
-      {/* 1. GLASS NAV */}
+      {/* 1. TOP HUD NAV */}
       <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-xl border-b border-white/5">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00FFFF]">Slotify Hub</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00FFFF]">Slotify OS v2.0</span>
           <span className="text-xl font-black italic tracking-tighter flex items-center gap-2">
             BENGALURU <ChevronRight size={14} className="text-[#00FFFF]" />
           </span>
@@ -88,18 +88,18 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* 2. BENTO STATS SECTION */}
+      {/* 2. BENTO STATS */}
       <div className="px-6 mt-6 grid grid-cols-2 gap-4">
         <div className="col-span-2 bg-gradient-to-r from-[#00FFFF]/10 to-transparent border border-white/10 p-4 rounded-[2rem] flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">City Availability</p>
-            <h4 className="text-2xl font-black text-[#00FFFF]">842 <span className="text-xs text-white/50">SLOTS</span></h4>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Active Grids</p>
+            <h4 className="text-2xl font-black text-[#00FFFF]">1,240 <span className="text-xs text-white/50">SLOTS</span></h4>
           </div>
           <Activity className="text-[#00FFFF] animate-pulse" size={24} />
         </div>
       </div>
 
-      {/* 3. MESH GRADIENT SLIDER */}
+      {/* 3. MESH GRADIENT EVENT SLIDER */}
       <section className="px-6 mt-8">
         <div className="relative h-60 w-full">
           <AnimatePresence mode="wait">
@@ -117,58 +117,60 @@ const Dashboard = () => {
                   {liveEvents[activeTab].tag}
                 </div>
                 <h3 className="text-4xl font-black uppercase italic leading-none">{liveEvents[activeTab].title}</h3>
+                <p className="text-[10px] font-bold text-white/50 mt-2 flex items-center gap-1 uppercase tracking-widest italic"><MapPin size={10} /> {liveEvents[activeTab].location}</p>
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
       </section>
 
-      {/* 4. UPGRADED MALL CARDS WITH CAPACITY BARS */}
-      <section className="px-6 mt-12 mb-20">
+      {/* 4. MALL CARDS WITH HUD UI */}
+      <section className="px-6 mt-12 mb-32">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xs font-black uppercase tracking-[0.3em] text-[#00FFFF]">Nearby Grids</h2>
           <div className="h-[1px] flex-1 bg-white/5 mx-4" />
         </div>
 
         <div className="space-y-6">
-          {malls.map((mall, idx) => {
+          {malls.length > 0 ? malls.map((mall, idx) => {
             const isBusy = mall.status === "High Demand" || mall.status === "Congested";
-            const capacity = isBusy ? "85%" : "22%";
+            const capacity = isBusy ? "88%" : "24%";
             
             return (
               <motion.div
                 key={mall._id || idx}
                 whileHover={{ y: -5 }}
                 onClick={() => navigate("/booking", { state: mall })}
-                className="relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 cursor-pointer group transition-all hover:bg-white/[0.06] hover:border-[#00FFFF]/30"
+                className="relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 cursor-pointer group transition-all hover:bg-white/[0.06] hover:border-[#00FFFF]/30 shadow-xl"
               >
-                {/* Visual Glass Shine */}
                 <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
                 
                 <div className="flex gap-5 items-center">
                   <div className="relative w-20 h-20 shrink-0">
-                    <img src={mall.image} className="w-full h-full object-cover rounded-3xl grayscale-[50%] group-hover:grayscale-0 transition-all duration-500" />
-                    <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-[#000d1a] ${isBusy ? "bg-red-500" : "bg-[#00FFFF]"}`} />
+                    <img src={mall.image} className="w-full h-full object-cover rounded-3xl grayscale-[50%] group-hover:grayscale-0 transition-all duration-500 shadow-lg border border-white/10" alt={mall.name} />
+                    <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-[#000d1a] ${isBusy ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]"}`} />
                   </div>
 
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors">{mall.name}</h3>
+                      <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors leading-none">{mall.name}</h3>
                       <div className="flex items-center gap-1 text-[10px] font-bold text-orange-400">
                         <Star size={10} fill="currentColor" /> {mall.rating}
                       </div>
                     </div>
+                    <p className="text-[9px] font-bold text-zinc-500 mt-1 uppercase tracking-widest">{mall.location} • {mall.distance}</p>
 
-                    {/* Dynamic Capacity Bar */}
+                    {/* Capacity HUD Bar */}
                     <div className="mt-4">
                       <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-zinc-500 mb-1.5">
-                        <span>Live Occupancy</span>
+                        <span>Load Factor</span>
                         <span className={isBusy ? "text-red-400" : "text-[#00FFFF]"}>{capacity}</span>
                       </div>
                       <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden p-[2px]">
                         <motion.div 
                           initial={{ width: 0 }}
-                          animate={{ width: capacity }}
+                          whileInView={{ width: capacity }}
+                          viewport={{ once: true }}
                           className={`h-full rounded-full ${isBusy ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]"}`}
                         />
                       </div>
@@ -177,7 +179,9 @@ const Dashboard = () => {
                 </div>
               </motion.div>
             );
-          })}
+          }) : (
+            <div className="text-center text-gray-500 py-10 font-bold uppercase tracking-widest text-xs border border-dashed border-white/10 rounded-[2.5rem]">No grid signals found</div>
+          )}
         </div>
       </section>
     </div>
