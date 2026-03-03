@@ -45,9 +45,11 @@ const Dashboard = () => {
     const fetchMalls = async () => {
       try {
         const response = await api.get("/api/slots"); 
-        setMalls(response.data);
+        // Array check to prevent .map crash
+        setMalls(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Integration Error:", error);
+        setMalls([]);
       } finally {
         setLoading(false);
       }
@@ -79,8 +81,7 @@ const Dashboard = () => {
   }
 
   return (
-    // Changed pb-32 to pb-20 to align with the permanent bottom bar
-    <div className="min-h-screen bg-[#000d1a] text-white pb-20 font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden relative">
       
       {/* 1. TOP NAVIGATION */}
       <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-xl border-b border-white/5">
@@ -157,7 +158,7 @@ const Dashboard = () => {
       </section>
 
       {/* 4. UNLOCKED MALLS */}
-      <section className="px-6 mt-12">
+      <section className="px-6 mt-12 mb-10">
         <div className="flex justify-between items-center mb-6 px-1">
           <h2 className="text-sm font-black uppercase tracking-widest">Unlocked Malls</h2>
           <span className="text-[10px] font-black text-[#00FFFF] uppercase tracking-widest cursor-pointer hover:underline">View All</span>
@@ -176,7 +177,6 @@ const Dashboard = () => {
             >
               <div className="relative w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0 border border-white/10">
                 <img 
-                  // Logic to fix UB City image if the DB link is broken
                   src={mall.name === "UB City Mall" && mall.image.includes("...") 
                     ? "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop" 
                     : mall.image
@@ -205,8 +205,6 @@ const Dashboard = () => {
           )}
         </div>
       </section>
-
-      {/* Floating Glass Dock was removed to fix double dashboard issue */}
     </div>
   );
 };
