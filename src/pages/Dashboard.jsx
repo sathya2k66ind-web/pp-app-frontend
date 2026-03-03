@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Ticket, MapPin, Zap, Star, Bell, Search, Music, Trophy, ChevronRight } from "lucide-react";
+import { Ticket, MapPin, Zap, Star, Bell, Search, Music, Trophy, ChevronRight, Activity, layout } from "lucide-react";
 import { api } from "../api/api"; 
 import { logoutUser } from "../api/auth";
 
@@ -18,7 +18,7 @@ const Dashboard = () => {
       location: "Phoenix Marketcity",
       tag: "50% OFF",
       icon: <Zap size={18} fill="currentColor" />,
-      color: "from-purple-600 to-blue-500",
+      color: "from-purple-600/40 to-blue-500/40",
       image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=800"
     },
     {
@@ -27,17 +27,8 @@ const Dashboard = () => {
       location: "UB City Arena",
       tag: "LIVE NOW",
       icon: <Music size={18} fill="currentColor" />,
-      color: "from-orange-600 to-red-500",
+      color: "from-orange-600/40 to-red-500/40",
       image: "https://images.unsplash.com/photo-1514525253344-7814d999d641?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-      id: 3,
-      title: "E-Sports Qualifiers",
-      location: "Nexus Mall",
-      tag: "TOURNAMENT",
-      icon: <Trophy size={18} fill="currentColor" />,
-      color: "from-green-600 to-cyan-500",
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
     }
   ];
 
@@ -45,7 +36,6 @@ const Dashboard = () => {
     const fetchMalls = async () => {
       try {
         const response = await api.get("/api/slots"); 
-        // Array check to prevent .map crash
         setMalls(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Integration Error:", error);
@@ -83,126 +73,111 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden relative">
       
-      {/* 1. TOP NAVIGATION */}
+      {/* 1. GLASS NAV */}
       <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-xl border-b border-white/5">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00FFFF]">Slotify</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00FFFF]">Slotify Hub</span>
           <span className="text-xl font-black italic tracking-tighter flex items-center gap-2">
             BENGALURU <ChevronRight size={14} className="text-[#00FFFF]" />
           </span>
         </div>
         <div className="flex gap-4 items-center">
-          <div className="relative p-2.5 bg-white/5 rounded-full border border-white/10 cursor-pointer">
-            <Bell size={20} />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#00FFFF] rounded-full animate-pulse shadow-[0_0_10px_#00FFFF]" />
-          </div>
-          <div 
-            onClick={handleLogout}
-            className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden shadow-lg cursor-pointer hover:scale-105 transition-transform"
-          >
+          <div onClick={handleLogout} className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden cursor-pointer shadow-[0_0_15px_rgba(0,255,255,0.2)]">
             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Slotify" alt="User" />
           </div>
         </div>
       </nav>
 
-      {/* 2. SEARCH BAR */}
-      <div className="px-6 mt-6">
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#00FFFF] transition-colors" size={18} />
-          <input 
-            type="text" 
-            placeholder="Find your next destination..." 
-            className="w-full bg-white/5 border border-white/10 py-4 pl-12 pr-6 rounded-2xl focus:outline-none focus:border-[#00FFFF]/40 focus:bg-white/10 transition-all text-sm"
-          />
+      {/* 2. BENTO STATS SECTION */}
+      <div className="px-6 mt-6 grid grid-cols-2 gap-4">
+        <div className="col-span-2 bg-gradient-to-r from-[#00FFFF]/10 to-transparent border border-white/10 p-4 rounded-[2rem] flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">City Availability</p>
+            <h4 className="text-2xl font-black text-[#00FFFF]">842 <span className="text-xs text-white/50">SLOTS</span></h4>
+          </div>
+          <Activity className="text-[#00FFFF] animate-pulse" size={24} />
         </div>
       </div>
 
-      {/* 3. LIVE CITY PULSE (SLIDER) */}
+      {/* 3. MESH GRADIENT SLIDER */}
       <section className="px-6 mt-8">
-        <div className="flex justify-between items-end mb-4 px-1">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Live City Pulse</h2>
-          <div className="flex gap-1.5">
-            {liveEvents.map((_, i) => (
-              <div key={i} className={`h-1 rounded-full transition-all duration-500 ${activeTab === i ? "w-6 bg-[#00FFFF]" : "w-2 bg-white/10"}`} />
-            ))}
-          </div>
-        </div>
-
-        <div className="relative h-52 w-full">
+        <div className="relative h-60 w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className={`absolute inset-0 rounded-[2.5rem] overflow-hidden p-8 flex flex-col justify-end bg-gradient-to-br ${liveEvents[activeTab].color} shadow-2xl shadow-black/50`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              className={`absolute inset-0 rounded-[3rem] overflow-hidden p-8 flex flex-col justify-end bg-gradient-to-br ${liveEvents[activeTab].color} border border-white/10`}
             >
-              <img src={liveEvents[activeTab].image} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 grayscale-[20%]" alt="Event" />
+              <img src={liveEvents[activeTab].image} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 grayscale" alt="Event" />
               <div className="relative z-10">
-                <motion.div 
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest mb-4 border border-white/10"
-                >
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-[9px] font-black mb-4 border border-[#00FFFF]/30">
                   <span className="text-[#00FFFF]">{liveEvents[activeTab].icon}</span>
                   {liveEvents[activeTab].tag}
-                </motion.div>
-                <h3 className="text-3xl font-black uppercase tracking-tighter leading-none italic">{liveEvents[activeTab].title}</h3>
-                <p className="text-[10px] font-bold text-white/70 mt-2 flex items-center gap-1 uppercase tracking-[0.2em]">
-                  <MapPin size={12} className="text-[#00FFFF]" /> {liveEvents[activeTab].location}
-                </p>
+                </div>
+                <h3 className="text-4xl font-black uppercase italic leading-none">{liveEvents[activeTab].title}</h3>
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
       </section>
 
-      {/* 4. UNLOCKED MALLS */}
-      <section className="px-6 mt-12 mb-10">
-        <div className="flex justify-between items-center mb-6 px-1">
-          <h2 className="text-sm font-black uppercase tracking-widest">Unlocked Malls</h2>
-          <span className="text-[10px] font-black text-[#00FFFF] uppercase tracking-widest cursor-pointer hover:underline">View All</span>
+      {/* 4. UPGRADED MALL CARDS WITH CAPACITY BARS */}
+      <section className="px-6 mt-12 mb-20">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-[#00FFFF]">Nearby Grids</h2>
+          <div className="h-[1px] flex-1 bg-white/5 mx-4" />
         </div>
 
-        <div className="space-y-4">
-          {malls.length > 0 ? malls.map((mall, idx) => (
-            <motion.div
-              key={mall._id || idx}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/booking", { state: mall })}
-              className="group bg-white/[0.03] border border-white/5 rounded-[2.2rem] p-4 flex items-center gap-5 hover:bg-white/[0.08] hover:border-[#00FFFF]/20 transition-all cursor-pointer"
-            >
-              <div className="relative w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0 border border-white/10">
-                <img 
-                  src={mall.name === "UB City Mall" && mall.image.includes("...") 
-                    ? "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop" 
-                    : mall.image
-                  } 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 grayscale-[30%] group-hover:grayscale-0" 
-                  alt={mall.name} 
-                />
-              </div>
-              
-              <div className="flex-1">
-                <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors">{mall.name}</h3>
+        <div className="space-y-6">
+          {malls.map((mall, idx) => {
+            const isBusy = mall.status === "High Demand" || mall.status === "Congested";
+            const capacity = isBusy ? "85%" : "22%";
+            
+            return (
+              <motion.div
+                key={mall._id || idx}
+                whileHover={{ y: -5 }}
+                onClick={() => navigate("/booking", { state: mall })}
+                className="relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 cursor-pointer group transition-all hover:bg-white/[0.06] hover:border-[#00FFFF]/30"
+              >
+                {/* Visual Glass Shine */}
+                <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
                 
-                <div className="flex items-center gap-4 mt-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                  <div className="flex items-center gap-1"><MapPin size={12} className="text-[#00FFFF]" /> {mall.distance}</div>
-                  <div className="flex items-center gap-1 text-orange-400"><Star size={12} fill="currentColor" /> {mall.rating}</div>
-                </div>
+                <div className="flex gap-5 items-center">
+                  <div className="relative w-20 h-20 shrink-0">
+                    <img src={mall.image} className="w-full h-full object-cover rounded-3xl grayscale-[50%] group-hover:grayscale-0 transition-all duration-500" />
+                    <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-[#000d1a] ${isBusy ? "bg-red-500" : "bg-[#00FFFF]"}`} />
+                  </div>
 
-                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-[#000d1a] border border-white/10 rounded-full">
-                  <div className={`w-1.5 h-1.5 rounded-full ${mall.status === "High Demand" ? "bg-red-500 animate-pulse shadow-[0_0_8px_red]" : mall.status === "Available" ? "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]" : "bg-orange-500"}`} />
-                  <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">{mall.status}</span>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors">{mall.name}</h3>
+                      <div className="flex items-center gap-1 text-[10px] font-bold text-orange-400">
+                        <Star size={10} fill="currentColor" /> {mall.rating}
+                      </div>
+                    </div>
+
+                    {/* Dynamic Capacity Bar */}
+                    <div className="mt-4">
+                      <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-zinc-500 mb-1.5">
+                        <span>Live Occupancy</span>
+                        <span className={isBusy ? "text-red-400" : "text-[#00FFFF]"}>{capacity}</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden p-[2px]">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: capacity }}
+                          className={`h-full rounded-full ${isBusy ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]"}`}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          )) : (
-            <div className="text-center text-gray-500 py-10 font-bold uppercase tracking-widest text-xs">No active slots found in Bengaluru grid</div>
-          )}
+              </motion.div>
+            );
+          })}
         </div>
       </section>
     </div>
