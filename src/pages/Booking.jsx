@@ -118,8 +118,8 @@ export default function Booking() {
         </div>
       </div>
 
-      {/* FIXED: Increased padding-bottom (pb-40) to ensure content scrolls past the fixed button */}
-      <div className="px-6 -mt-4 relative z-10 pb-40">
+      {/* UI FIX: Increased pb-52 to allow content to scroll above both the Initialize button AND Bottom Nav */}
+      <div className="px-6 -mt-4 relative z-10 pb-52">
 
         {/* 2. DUAL TIME DIALS */}
         <div className="grid grid-cols-2 gap-4 mb-8">
@@ -239,16 +239,16 @@ export default function Booking() {
         </AnimatePresence>
       </div>
 
-      {/* 6. GLOBAL CTA - Added Pointer Events and Gradient Adjustments */}
-      <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#000d1a] via-[#000d1a]/95 to-transparent z-[100] pointer-events-none">
+      {/* 6. GLOBAL CTA FIX: Moved to bottom-20 to sit exactly ABOVE the bottom navigation bar */}
+      <div className="fixed bottom-20 left-0 right-0 p-6 z-[90] pointer-events-none">
         <motion.button
           disabled={!selectedSlot}
           whileHover={selectedSlot ? { scale: 1.02 } : {}}
           whileTap={selectedSlot ? { scale: 0.98 } : {}}
           onClick={handleContinue}
-          className={`w-full py-5 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[12px] flex items-center justify-center gap-3 transition-all pointer-events-auto ${
+          className={`w-full py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-3 transition-all pointer-events-auto backdrop-blur-md ${
             selectedSlot 
-              ? "bg-[#00FFFF] text-black shadow-[0_15px_40px_rgba(0,255,255,0.3)]" 
+              ? "bg-[#00FFFF] text-black shadow-[0_15px_40px_rgba(0,255,255,0.4)]" 
               : "bg-white/5 text-zinc-700 border border-white/5"
           }`}
         >
@@ -258,7 +258,7 @@ export default function Booking() {
               Initialize {selectedSlot}
             </>
           ) : (
-            "Awaiting Selection"
+            "Select Unit to Continue"
           )}
         </motion.button>
       </div>
