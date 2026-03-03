@@ -68,7 +68,7 @@ export default function Booking() {
         entryTime: formatTime(entryMinutes), 
         exitTime: formatTime(exitMinutes), 
         duration,
-        amount: 120 // Passing the default amount for the payment screen
+        amount: 120 
       }
     });
   };
@@ -81,7 +81,7 @@ export default function Booking() {
   }, [entryMinutes, floor]);
 
   return (
-    <div className="min-h-screen bg-[#000d1a] text-white font-sans pb-32 overflow-x-hidden">
+    <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden">
       
       {/* 1. CINEMATIC HEADER */}
       <div className="relative h-80 w-full overflow-hidden">
@@ -108,7 +108,6 @@ export default function Booking() {
         </div>
 
         <div className="absolute bottom-10 left-8">
-          {/* FIXED: Added closing tag for h1 */}
           <h1 className="text-4xl font-black tracking-tighter italic uppercase leading-none">
             {mall.name}
           </h1>
@@ -119,7 +118,8 @@ export default function Booking() {
         </div>
       </div>
 
-      <div className="px-6 -mt-4 relative z-10">
+      {/* FIXED: Increased padding-bottom (pb-40) to ensure content scrolls past the fixed button */}
+      <div className="px-6 -mt-4 relative z-10 pb-40">
 
         {/* 2. DUAL TIME DIALS */}
         <div className="grid grid-cols-2 gap-4 mb-8">
@@ -237,31 +237,30 @@ export default function Booking() {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
 
-        {/* 6. GLOBAL CTA */}
-        <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#000d1a] via-[#000d1a]/90 to-transparent z-50">
-          <motion.button
-            disabled={!selectedSlot}
-            whileHover={selectedSlot ? { scale: 1.02 } : {}}
-            whileTap={selectedSlot ? { scale: 0.98 } : {}}
-            onClick={handleContinue}
-            className={`w-full py-5 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[12px] flex items-center justify-center gap-3 transition-all ${
-              selectedSlot 
-                ? "bg-[#00FFFF] text-black shadow-[0_15px_40px_rgba(0,255,255,0.3)]" 
-                : "bg-white/5 text-zinc-700 border border-white/5"
-            }`}
-          >
-            {selectedSlot ? (
-              <>
-                <Zap size={16} fill="currentColor" /> 
-                Initialize {selectedSlot}
-              </>
-            ) : (
-              "Awaiting Selection"
-            )}
-          </motion.button>
-        </div>
-
+      {/* 6. GLOBAL CTA - Added Pointer Events and Gradient Adjustments */}
+      <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#000d1a] via-[#000d1a]/95 to-transparent z-[100] pointer-events-none">
+        <motion.button
+          disabled={!selectedSlot}
+          whileHover={selectedSlot ? { scale: 1.02 } : {}}
+          whileTap={selectedSlot ? { scale: 0.98 } : {}}
+          onClick={handleContinue}
+          className={`w-full py-5 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[12px] flex items-center justify-center gap-3 transition-all pointer-events-auto ${
+            selectedSlot 
+              ? "bg-[#00FFFF] text-black shadow-[0_15px_40px_rgba(0,255,255,0.3)]" 
+              : "bg-white/5 text-zinc-700 border border-white/5"
+          }`}
+        >
+          {selectedSlot ? (
+            <>
+              <Zap size={16} fill="currentColor" /> 
+              Initialize {selectedSlot}
+            </>
+          ) : (
+            "Awaiting Selection"
+          )}
+        </motion.button>
       </div>
     </div>
   );
