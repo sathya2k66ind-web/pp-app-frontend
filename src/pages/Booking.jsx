@@ -2,12 +2,12 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Cpu, Clock, Layers, Zap, User, Target } from "lucide-react";
-import { useUser } from "../context/UserContext"; // 👈 Integrated Global Context
+import { useUser } from "../context/UserContext"; 
 
 export default function Booking() {
   const navigate = useNavigate();
   const locationData = useLocation();
-  const { userData } = useUser(); // 👈 Accessing real user data
+  const { userData } = useUser(); 
 
   const mall = locationData.state || {
     name: "UB City Mall",
@@ -63,10 +63,9 @@ export default function Booking() {
   const duration = exitMinutes > entryMinutes ? ((exitMinutes - entryMinutes) / 60).toFixed(1) : null;
 
   const handleContinue = () => {
-    // 🛡️ CRITICAL: Attaching User ID to the booking state
     navigate("/payment", {
       state: { 
-        userId: userData?.userId, // 👈 "Global Brain" Integration
+        userId: userData?.userId, 
         userName: userData?.name,
         mall: mall.name, 
         slot: selectedSlot, 
@@ -108,11 +107,10 @@ export default function Booking() {
             <ChevronLeft size={20} className="text-[#00FFFF]" />
           </button>
           
-          {/* NEW: User Identification Badge */}
           <div className="px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center gap-3">
              <div className="text-right">
                 <p className="text-[7px] font-black text-[#00FFFF] uppercase tracking-widest">Pilot Identity</p>
-                <p className="text-[10px] font-black uppercase tracking-tight italic">{userData?.name?.split(' ')[0] || "Guest"}</p>
+                <p className="text-[10px] font-black uppercase tracking-tight">{userData?.name?.split(' ')[0] || "Guest"}</p>
              </div>
              <div className="w-8 h-8 rounded-lg overflow-hidden border border-[#00FFFF]/30">
                 <img src={userData?.profilePic} alt="P" className="w-full h-full object-cover" />
@@ -125,7 +123,7 @@ export default function Booking() {
              <Target size={14} className="text-[#00FFFF] animate-pulse" />
              <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.4em]">Target Grid Sector</span>
           </div>
-          <h1 className="text-5xl font-black tracking-tighter italic uppercase leading-none drop-shadow-2xl">
+          <h1 className="text-5xl font-black tracking-tighter uppercase leading-none drop-shadow-2xl">
             {mall.name}
           </h1>
         </div>
@@ -149,7 +147,7 @@ export default function Booking() {
                 >
                   -
                 </button>
-                <span className="text-xl font-black tabular-nums text-white italic">{formatTime(dial.time)}</span>
+                <span className="text-xl font-black tabular-nums text-white uppercase">{formatTime(dial.time)}</span>
                 <button 
                   onClick={() => adjustTime(dial.type, 10)} 
                   className="w-10 h-10 flex items-center justify-center text-white/20 hover:text-[#00FFFF] transition-all hover:bg-white/5 rounded-xl"
@@ -177,7 +175,7 @@ export default function Booking() {
                 <p className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">Automated Timeline Sync</p>
               </div>
             </div>
-            <span className="text-lg font-black text-[#00FFFF] italic">{duration} HRS</span>
+            <span className="text-lg font-black text-[#00FFFF] uppercase">{duration} HRS</span>
           </motion.div>
         )}
 
@@ -226,7 +224,7 @@ export default function Booking() {
                 {slots.map((slot) => {
                   const isDisabled = slot.unavailable;
                   let colorClass;
-                  if (slot.permanentlyBlocked) colorClass = "bg-zinc-900/50 border-white/5 text-zinc-800";
+                  if (slot.permanentlyBlocked) colorClass = "bg-zinc-900/50 border-white/5";
                   else if (slot.id === selectedSlot) colorClass = "bg-[#00FFFF] text-black border-[#00FFFF] shadow-[0_0_30px_rgba(0,255,255,0.5)] scale-110 z-10 ring-4 ring-[#000d1a]";
                   else if (slot.occupancy < 0.3) colorClass = "bg-white/5 border-white/10 text-white hover:border-[#00FFFF]/50";
                   else if (slot.occupancy < 0.6) colorClass = "bg-orange-500/5 border-orange-500/20 text-orange-400";
@@ -237,25 +235,30 @@ export default function Booking() {
                       key={slot.id}
                       whileTap={!isDisabled ? { scale: 0.9 } : {}}
                       onClick={() => !isDisabled && setSelectedSlot(slot.id)}
-                      className={`h-24 rounded-3xl border flex flex-col items-center justify-center font-black transition-all duration-500 ${colorClass} ${isDisabled ? "opacity-10 cursor-not-allowed grayscale" : "cursor-pointer"}`}
+                      className={`h-24 rounded-3xl border flex flex-col items-center justify-center font-black transition-all duration-500 ${colorClass} ${isDisabled ? "cursor-not-allowed border-white/5 bg-white/[0.01]" : "cursor-pointer"}`}
                     >
-                      <span className="text-[7px] opacity-40 mb-1 uppercase tracking-tighter">{slot.id.split('-')[0]}</span>
-                      <span className="text-base tracking-tighter italic">{slot.id.split('-')[1]}</span>
+                      {!isDisabled && (
+                        <>
+                          <span className="text-[7px] opacity-40 mb-1 uppercase tracking-tighter">{slot.id.split('-')[0]}</span>
+                          <span className="text-base tracking-tighter uppercase">{slot.id.split('-')[1]}</span>
+                        </>
+                      )}
                     </motion.div>
                   );
                 })}
               </div>
 
-              <div className="grid grid-cols-4 gap-2 mt-10 pt-8 border-t border-white/5 px-2">
+              {/* ENHANCED LEGEND */}
+              <div className="grid grid-cols-4 gap-4 mt-10 pt-8 border-t border-white/5 px-2">
                 {[
                   { color: "bg-white/20", label: "Open" },
                   { color: "bg-red-500/40", label: "Full" },
                   { color: "bg-zinc-800", label: "Block" },
                   { color: "bg-[#00FFFF]", label: "Your Selection" }
                 ].map((item) => (
-                  <div key={item.label} className="flex flex-col items-center gap-2">
-                    <div className={`w-full h-1 rounded-full ${item.color}`}></div> 
-                    <span className="text-[7px] uppercase font-black text-zinc-600 tracking-tighter text-center">{item.label}</span>
+                  <div key={item.label} className="flex flex-col items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl border border-white/10 ${item.color}`}></div> 
+                    <span className="text-[9px] uppercase font-black text-white tracking-widest text-center">{item.label}</span>
                   </div>
                 ))}
               </div>

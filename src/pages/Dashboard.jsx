@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Star, ChevronRight, Activity, MapPin, Trophy, Sparkles } from "lucide-react";
-import { useUser } from "../context/UserContext"; // 👈 Integrated Global Context
+import { useUser } from "../context/UserContext"; 
 import { api } from "../api/api"; 
 import { logoutUser } from "../api/auth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { userData, loading: userLoading } = useUser(); // 👈 Accessing real user data
+  const { userData, loading: userLoading } = useUser();
   const [activeTab, setActiveTab] = useState(0);
   const [malls, setMalls] = useState([]); 
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,6 @@ const Dashboard = () => {
     }
   ];
 
-  // Dynamic Greeting Logic
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good Morning";
@@ -68,7 +67,6 @@ const Dashboard = () => {
     }
   };
 
-  // Show a clean loader if context or malls are fetching
   if (loading || userLoading) {
     return (
       <div className="min-h-screen bg-[#000d1a] flex items-center justify-center">
@@ -96,7 +94,7 @@ const Dashboard = () => {
             <Sparkles size={10} className="text-[#00FFFF]" />
             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40">Authorized Pilot</span>
           </div>
-          <span className="text-xl font-black italic tracking-tighter flex items-center gap-2 uppercase">
+          <span className="text-xl font-black tracking-tighter flex items-center gap-2 uppercase">
             {userData?.name?.split(' ')[0] || "Pilot"} <ChevronRight size={14} className="text-[#00FFFF]" />
           </span>
         </div>
@@ -125,7 +123,7 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* 2. BENTO STATS - UPDATED WITH USER CONTEXT */}
+      {/* 2. BENTO STATS */}
       <div className="px-6 mt-8">
         <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-6 rounded-[2.5rem] relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -134,7 +132,7 @@ const Dashboard = () => {
           <div className="relative z-10 flex items-center justify-between">
             <div>
               <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Live Grid Pulse</p>
-              <h4 className="text-3xl font-black text-white italic">1,240 <span className="text-xs text-[#00FFFF] not-italic ml-1">SLOTS READY</span></h4>
+              <h4 className="text-3xl font-black text-white uppercase">1,240 <span className="text-xs text-[#00FFFF] ml-1">SLOTS READY</span></h4>
               <p className="text-[9px] font-bold text-zinc-500 mt-2 uppercase tracking-widest">Bengaluru Hub • High Availability</p>
             </div>
             <div className="w-14 h-14 bg-[#00FFFF]/10 rounded-[1.5rem] flex items-center justify-center border border-[#00FFFF]/20">
@@ -161,8 +159,8 @@ const Dashboard = () => {
                   <span className="text-[#00FFFF]">{liveEvents[activeTab].icon}</span>
                   {liveEvents[activeTab].tag}
                 </div>
-                <h3 className="text-5xl font-black uppercase italic leading-[0.9] tracking-tighter">{liveEvents[activeTab].title}</h3>
-                <p className="text-[11px] font-bold text-white/40 mt-3 flex items-center gap-2 uppercase tracking-[0.2em] italic">
+                <h3 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter">{liveEvents[activeTab].title}</h3>
+                <p className="text-[11px] font-bold text-white/40 mt-3 flex items-center gap-2 uppercase tracking-[0.2em]">
                   <MapPin size={12} className="text-[#00FFFF]" /> {liveEvents[activeTab].location}
                 </p>
               </div>
@@ -209,7 +207,7 @@ const Dashboard = () => {
 
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-black text-xl uppercase tracking-tighter italic group-hover:text-[#00FFFF] transition-colors leading-none">{mall.name}</h3>
+                      <h3 className="font-black text-xl uppercase tracking-tighter group-hover:text-[#00FFFF] transition-colors leading-none">{mall.name}</h3>
                       <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-lg border border-white/5 text-[10px] font-black text-orange-400">
                         <Star size={10} fill="currentColor" /> {mall.rating}
                       </div>
