@@ -131,7 +131,7 @@ export default function Booking() {
 
       <div className="px-6 -mt-6 relative z-10 pb-52">
 
-        {/* REFINED DUAL TIME DIALS */}
+        {/* DUAL TIME DIALS */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           {[
             { label: "Arrival Vector", time: entryMinutes, type: "entry" },
@@ -224,25 +224,29 @@ export default function Booking() {
                 {slots.map((slot) => {
                   const isDisabled = slot.unavailable;
                   let colorClass;
-                  if (slot.permanentlyBlocked) colorClass = "bg-zinc-900/50 border-white/5";
-                  else if (slot.id === selectedSlot) colorClass = "bg-[#00FFFF] text-black border-[#00FFFF] shadow-[0_0_30px_rgba(0,255,255,0.5)] scale-110 z-10 ring-4 ring-[#000d1a]";
-                  else if (slot.occupancy < 0.3) colorClass = "bg-white/5 border-white/10 text-white hover:border-[#00FFFF]/50";
-                  else if (slot.occupancy < 0.6) colorClass = "bg-orange-500/5 border-orange-500/20 text-orange-400";
-                  else colorClass = "bg-red-500/5 border-red-500/20 text-red-500";
+                  
+                  // Text remains visible always, but container changes
+                  if (isDisabled) {
+                    colorClass = "bg-white/[0.01] border-white/5 text-zinc-800"; // Ghost look, but ID visible
+                  } else if (slot.id === selectedSlot) {
+                    colorClass = "bg-[#00FFFF] text-black border-[#00FFFF] shadow-[0_0_30px_rgba(0,255,255,0.5)] scale-110 z-10 ring-4 ring-[#000d1a]";
+                  } else if (slot.occupancy < 0.3) {
+                    colorClass = "bg-white/5 border-white/10 text-white hover:border-[#00FFFF]/50";
+                  } else if (slot.occupancy < 0.6) {
+                    colorClass = "bg-orange-500/5 border-orange-500/20 text-orange-400";
+                  } else {
+                    colorClass = "bg-red-500/5 border-red-500/20 text-red-500";
+                  }
 
                   return (
                     <motion.div
                       key={slot.id}
                       whileTap={!isDisabled ? { scale: 0.9 } : {}}
                       onClick={() => !isDisabled && setSelectedSlot(slot.id)}
-                      className={`h-24 rounded-3xl border flex flex-col items-center justify-center font-black transition-all duration-500 ${colorClass} ${isDisabled ? "cursor-not-allowed border-white/5 bg-white/[0.01]" : "cursor-pointer"}`}
+                      className={`h-24 rounded-3xl border flex flex-col items-center justify-center font-black transition-all duration-500 ${colorClass} ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"}`}
                     >
-                      {!isDisabled && (
-                        <>
-                          <span className="text-[7px] opacity-40 mb-1 uppercase tracking-tighter">{slot.id.split('-')[0]}</span>
-                          <span className="text-base tracking-tighter uppercase">{slot.id.split('-')[1]}</span>
-                        </>
-                      )}
+                      <span className="text-[7px] opacity-40 mb-1 uppercase tracking-tighter">{slot.id.split('-')[0]}</span>
+                      <span className="text-base tracking-tighter uppercase">{slot.id.split('-')[1]}</span>
                     </motion.div>
                   );
                 })}
