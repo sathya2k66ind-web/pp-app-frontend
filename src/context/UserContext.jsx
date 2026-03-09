@@ -1,46 +1,54 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { api } from "../api/api"; // 👈 Ensure your axios instance is imported
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  // Initial "Pilot" State
-  const [userData, setUserData] = useState({
-    name: "Aravind Swamy",
-    email: "aravind.ux@slotify.com",
-    profilePic: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aravind",
-    userId: "SLOT-8829",
-    rank: "Executive Pilot",
-    joinedDate: "OCT 2023"
-  });
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
 
-  // Global function to update identity across all screens
-  const updateUserData = (newData) => {
-    setUserData((prev) => ({
-      ...prev,
-      ...newData,
-    }));
+  // 1. SYNC WITH BACKEND (Render + MongoDB)
+  const fetchUser = async (id = "SLOT-8829") => {
+    try {
+      setLoading(true);
+      // Change this endpoint to match your backend route
+      const response = await api.get(`/api/users/${id}`); 
+      setUserData(response.data);
+      localStorage.setItem("slotify_user", JSON.stringify(response.data));
+    } catch (error) {
+      console.error("Signal Lost: Could not sync with Cloud Identity", error);
+      // Fallback to local storage if server is down
+      const savedUser = localStorage.getItem("slotify_user");
+      if (savedUser) setUserData(JSON.parse(savedUser));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Optional: Sync with LocalStorage to persist login through refreshes
-  useEffect(() => {
-    const savedUser = localStorage.getItem("slotify_user");
-    if (savedUser) {
-      setUserData(JSON.parse(savedUser));
+  // 2. GLOBAL UPDATE (Updates State + Cloud)
+  const updateUserData = async (newData) => {
+    try {
+      // Optimistic update (UI changes immediately)
+      setUserData((prev) => ({ ...prev, ...newData }));
+
+      // Update Database
+      await api.put(`/api/users/update/${userData.userId}`, newData);
+    } catch (error) {
+      console.error("Cloud Sync Failed", error);
     }
+  };
+
+  useEffect(() => {
+    fetchUser();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("slotify_user", JSON.stringify(userData));
-  }, [userData]);
-
   return (
-    <UserContext.Provider value={{ userData, updateUserData }}>
+    <UserContext.Provider value={{ userData, updateUserData, loading, refreshUser: fetchUser }}>
       {children}
     </UserContext.Provider>
   );
 };
 
-// Custom hook for cleaner imports in your pages
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
