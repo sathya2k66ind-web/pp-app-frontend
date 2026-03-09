@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { QRCodeSVG } from "qrcode.react"; // Ensure you have qrcode.react installed
-import { ArrowLeft, Download, Share2, MapPin, Calendar, Clock, ShieldCheck, User } from "lucide-react";
-import { useUser } from "../context/UserContext"; // 👈 Context integrated
+import { QRCodeSVG } from "qrcode.react";
+import { 
+  ArrowLeft, 
+  Download, 
+  Share2, 
+  MapPin, 
+  Calendar, 
+  Clock, 
+  ShieldCheck, 
+  Navigation 
+} from "lucide-react";
+import { useUser } from "../context/UserContext";
 
 function Ticket() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userData } = useUser(); // 👈 Access user profile
+  const { userData } = useUser();
   const [qrLoaded, setQrLoaded] = useState(false);
 
   // Fallback data if location state is missing
@@ -16,7 +25,7 @@ function Ticket() {
     id: "SLT-X99204",
     location: "UB City Mall",
     slot: "F1-A12",
-    date: "24 OCT 2023",
+    date: "24 MAR 2026",
     time: "10:00 AM",
     amount: "120"
   };
@@ -26,18 +35,23 @@ function Ticket() {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleStartNavigation = () => {
+    // Passes the specific mall data to your working Navigation page
+    navigate("/navigate", { state: { target: booking.location, slot: booking.slot } });
+  };
+
   return (
     <div className="min-h-screen bg-[#000d1a] text-white font-sans relative overflow-hidden flex flex-col items-center py-12 px-6">
       
-      {/* 1. BACKGROUND EFFECTS */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none" 
+      {/* BACKGROUND GRID & BLOOM */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none" 
            style={{ backgroundImage: `radial-gradient(#00FFFF 0.5px, transparent 0.5px)`, backgroundSize: '24px 24px' }}></div>
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[60%] bg-[#00FFFF]/5 blur-[120px] rounded-full pointer-events-none" />
 
       {/* HEADER */}
       <div className="w-full max-w-sm flex items-center justify-between mb-10 relative z-10">
         <button 
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/dashboard")}
           className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-[#00FFFF]"
         >
           <ArrowLeft size={20} />
@@ -48,7 +62,7 @@ function Ticket() {
         </div>
       </div>
 
-      {/* 2. THE TICKET CARD */}
+      {/* THE TICKET CARD */}
       <motion.div 
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -109,31 +123,42 @@ function Ticket() {
           </div>
         </div>
 
-        {/* Magnetic Stripe / Perforation Decoration */}
-        <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#000d1a] rounded-full" />
-        <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#000d1a] rounded-full" />
+        {/* Ticket Perforation Holes */}
+        <div className="absolute -left-3 top-[55%] -translate-y-1/2 w-6 h-6 bg-[#000d1a] rounded-full" />
+        <div className="absolute -right-3 top-[55%] -translate-y-1/2 w-6 h-6 bg-[#000d1a] rounded-full" />
       </motion.div>
 
-      {/* 3. ACTION BUTTONS */}
-      <div className="mt-10 flex gap-4 w-full max-w-sm relative z-10">
+      {/* ACTION BUTTONS */}
+      <div className="mt-8 flex flex-col gap-4 w-full max-w-sm relative z-10">
         <motion.button 
-          whileTap={{ scale: 0.95 }}
-          className="flex-1 py-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all"
+          whileTap={{ scale: 0.96 }}
+          onClick={handleStartNavigation}
+          className="w-full py-5 rounded-[2rem] bg-[#00FFFF] text-[#000d1a] flex items-center justify-center gap-3 font-black uppercase text-xs tracking-[0.3em] shadow-[0_15px_35px_rgba(0,255,255,0.25)]"
         >
-          <Download size={16} className="text-[#00FFFF]" />
-          Save PDF
+          <Navigation size={18} fill="#000d1a" />
+          Start Navigation
         </motion.button>
-        <motion.button 
-          whileTap={{ scale: 0.95 }}
-          className="flex-1 py-4 rounded-2xl bg-[#00FFFF] text-[#000d1a] flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest shadow-[0_10px_30px_rgba(0,255,255,0.3)]"
-        >
-          <Share2 size={16} />
-          Dispatch
-        </motion.button>
+
+        <div className="flex gap-4">
+          <motion.button 
+            whileTap={{ scale: 0.95 }}
+            className="flex-1 py-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest"
+          >
+            <Download size={16} className="text-[#00FFFF]" />
+            PDF
+          </motion.button>
+          <motion.button 
+            whileTap={{ scale: 0.95 }}
+            className="flex-1 py-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest"
+          >
+            <Share2 size={16} className="text-[#00FFFF]" />
+            Share
+          </motion.button>
+        </div>
       </div>
 
       <p className="mt-8 text-zinc-600 text-[8px] font-black uppercase tracking-[0.4em] text-center max-w-[200px] leading-relaxed">
-        Present this encrypted signal at the entry terminal for automated hangar access.
+        Scan this signal at terminal gate {booking.slot?.split('-')[0]} for automated hangar access.
       </p>
     </div>
   );
