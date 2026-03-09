@@ -1,171 +1,152 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { QRCodeCanvas } from "qrcode.react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Navigation, Share2, Download, ChevronLeft, MapPin, Calendar, Clock } from "lucide-react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { QRCodeSVG } from "qrcode.react"; // Ensure you have qrcode.react installed
+import { ArrowLeft, Download, Share2, MapPin, Calendar, Clock, ShieldCheck, User } from "lucide-react";
+import { useUser } from "../context/UserContext"; // 👈 Context integrated
 
-const TicketQR = () => {
-  const navigate = useNavigate();
+function Ticket() {
   const location = useLocation();
-  const ticketRef = useRef(null);
+  const navigate = useNavigate();
+  const { userData } = useUser(); // 👈 Access user profile
+  const [qrLoaded, setQrLoaded] = useState(false);
 
-  // High-end placeholder data
+  // Fallback data if location state is missing
   const booking = location.state?.booking || {
-    mall: "Phoenix Mall of Asia",
-    mallImage: "https://images.unsplash.com/photo-1567449303078-57ad995bd17a?auto=format&fit=crop&w=800&q=80",
-    slot: "A-12",
-    ticketNo: "XP-772",
-    date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-    amount: "150.00",
+    id: "SLT-X99204",
+    location: "UB City Mall",
+    slot: "F1-A12",
+    date: "24 OCT 2023",
+    time: "10:00 AM",
+    amount: "120"
   };
 
-  const [visible, setVisible] = useState(false);
-  useEffect(() => { setVisible(true); }, []);
-
-  const downloadPDF = async () => {
-    const element = ticketRef.current;
-    const canvas = await html2canvas(element, {
-      backgroundColor: "#000d1a",
-      scale: 3,
-      useCORS: true,
-    });
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    pdf.addImage(imgData, "PNG", 10, 10, 190, 250);
-    pdf.save(`Slotify-Pass-${booking.ticketNo}.pdf`);
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => setQrLoaded(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#000d1a] text-white flex flex-col items-center p-6 font-sans relative overflow-hidden">
-      {/* MESH GRADIENT BACKGROUND */}
-      <div className="fixed top-[-10%] right-[-10%] w-[70%] h-[50%] bg-[#00FFFF]/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-[-10%] left-[-10%] w-[70%] h-[50%] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
+    <div className="min-h-screen bg-[#000d1a] text-white font-sans relative overflow-hidden flex flex-col items-center py-12 px-6">
+      
+      {/* 1. BACKGROUND EFFECTS */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none" 
+           style={{ backgroundImage: `radial-gradient(#00FFFF 0.5px, transparent 0.5px)`, backgroundSize: '24px 24px' }}></div>
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[60%] bg-[#00FFFF]/5 blur-[120px] rounded-full pointer-events-none" />
 
       {/* HEADER */}
-      <div className="w-full max-w-md flex justify-between items-center mb-8 relative z-20 pt-4">
+      <div className="w-full max-w-sm flex items-center justify-between mb-10 relative z-10">
         <button 
-          onClick={() => navigate("/dashboard")}
-          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"
+          onClick={() => navigate(-1)}
+          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-[#00FFFF]"
         >
-          <ChevronLeft size={20} />
+          <ArrowLeft size={20} />
         </button>
         <div className="text-right">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#00FFFF]">Digital Pass</p>
-          <p className="text-xs text-white/40 italic">ID: {booking.ticketNo}</p>
+          <h1 className="text-xl font-black italic tracking-tighter uppercase leading-none">Access Pass</h1>
+          <p className="text-[8px] font-black text-[#00FFFF] tracking-[0.3em] uppercase mt-1">Status: Authorized</p>
         </div>
       </div>
 
-      <motion.div
+      {/* 2. THE TICKET CARD */}
+      <motion.div 
         initial={{ opacity: 0, y: 40 }}
-        animate={visible ? { opacity: 1, y: 0 } : {}}
-        className="w-full max-w-md relative z-10"
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-sm bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] relative overflow-hidden shadow-2xl"
       >
-        {/* THE GLASS TICKET SLAB */}
-        <div 
-          ref={ticketRef} 
-          className="bg-white/[0.06] backdrop-blur-3xl border border-white/10 rounded-[3.5rem] overflow-hidden shadow-2xl"
-        >
-          {/* FADING MALL IMAGE SECTION */}
-          <div className="relative h-48 w-full">
-            <img 
-              src={booking.mallImage} 
-              alt="mall" 
-              className="w-full h-full object-cover opacity-40" 
-              crossOrigin="anonymous" 
+        {/* Top Section: User Info */}
+        <div className="p-8 pb-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-2xl border border-[#00FFFF]/30 overflow-hidden bg-black/40">
+                <img src={userData?.profilePic} alt="Pilot" className="w-full h-full object-cover" />
+             </div>
+             <div>
+                <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Pilot in Command</p>
+                <h2 className="text-sm font-black uppercase italic tracking-tighter">{userData?.name || "Unidentified Pilot"}</h2>
+             </div>
+          </div>
+          <ShieldCheck className="text-[#00FFFF]" size={24} />
+        </div>
+
+        {/* QR Section */}
+        <div className="p-8 flex flex-col items-center border-y border-white/5 bg-gradient-to-b from-white/[0.01] to-transparent">
+          <div className="bg-white p-4 rounded-[2rem] shadow-[0_0_50px_rgba(0,255,255,0.2)] relative">
+            <QRCodeSVG 
+              value={`slotify-booking-${booking.id}`} 
+              size={180} 
+              level="H"
+              includeMargin={false}
+              fgColor="#000d1a"
             />
-            {/* The Gradient Fade */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#000d1a]/80 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-8">
-               <div className="flex items-center gap-2 mb-1">
-                 <MapPin size={12} className="text-[#00FFFF]" />
-                 <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/50">Reserved Zone</span>
-               </div>
-               <h2 className="text-2xl font-black italic uppercase tracking-tighter">{booking.mall}</h2>
-            </div>
+            {!qrLoaded && (
+              <div className="absolute inset-0 bg-white rounded-[2rem] flex items-center justify-center">
+                 <div className="w-8 h-8 border-2 border-[#00FFFF] border-t-transparent animate-spin rounded-full" />
+              </div>
+            )}
+          </div>
+          <p className="mt-6 font-mono text-[10px] text-[#00FFFF] tracking-[0.5em] font-bold uppercase">{booking.id}</p>
+        </div>
+
+        {/* Details Section */}
+        <div className="p-8 space-y-6">
+          <div className="grid grid-cols-2 gap-6">
+            <DetailItem icon={<Calendar size={12}/>} label="Arrival Date" value={booking.date} />
+            <DetailItem icon={<Clock size={12}/>} label="Arrival Time" value={booking.time} />
           </div>
 
-          {/* BOOKING INFO GRID */}
-          <div className="p-8 grid grid-cols-2 gap-y-8 border-b border-white/5">
-            <div>
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">Parking Slot</p>
-              <h3 className="text-5xl font-black italic text-white tracking-tighter">{booking.slot}</h3>
-            </div>
-            <div className="text-right flex flex-col items-end justify-center">
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">Total Fee</p>
-              <h3 className="text-2xl font-black text-[#00FFFF]">₹{booking.amount}</h3>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-white/40">
-                <Calendar size={12} />
-                <p className="text-[10px] font-bold uppercase tracking-widest">{booking.date}</p>
-              </div>
-            </div>
-            <div className="text-right space-y-1">
-              <div className="flex items-center gap-2 justify-end text-white/40">
-                <Clock size={12} />
-                <p className="text-[10px] font-bold uppercase tracking-widest">Entry: Live</p>
-              </div>
-            </div>
-          </div>
-
-          {/* QR SCAN AREA */}
-          <div className="p-10 flex flex-col items-center bg-white/[0.02]">
-            <div className="relative group">
-              {/* Inner Glow around QR */}
-              <div className="absolute inset-0 bg-[#00FFFF]/10 blur-3xl rounded-full scale-90 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              
-              <div className="relative p-5 bg-white rounded-[2.8rem] shadow-2xl">
-                <QRCodeCanvas 
-                  value={`SLOTIFY-PASS-${booking.ticketNo}`} 
-                  size={150} 
-                  fgColor="#000d1a"
-                  level="H"
-                />
-              </div>
-            </div>
-            <p className="mt-8 text-[10px] font-black uppercase tracking-[0.5em] text-white/20">
-              Validated Signal
-            </p>
+          <div className="flex items-center justify-between py-4 border-t border-white/5">
+             <div>
+                <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1">Grid Target</p>
+                <div className="flex items-center gap-2">
+                   <MapPin size={14} className="text-[#00FFFF]" />
+                   <span className="text-lg font-black italic tracking-tighter uppercase">{booking.location}</span>
+                </div>
+             </div>
+             <div className="text-right">
+                <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1">Unit</p>
+                <span className="text-2xl font-black italic text-[#00FFFF] tracking-tighter">{booking.slot}</span>
+             </div>
           </div>
         </div>
 
-        {/* BOTTOM ACTION CLUSTER */}
-        <div className="mt-8 space-y-4">
-          <motion.button
-            whileTap={{ scale: 0.96 }}
-            onClick={() => navigate("/navigate", { state: { booking } })}
-            className="w-full py-5 rounded-[2.2rem] bg-white text-[#000d1a] font-black uppercase text-[11px] tracking-[0.3em] flex items-center justify-center gap-3 shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
-          >
-            <Navigation size={18} fill="currentColor" />
-            Initialize GPS
-          </motion.button>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <button 
-              onClick={downloadPDF}
-              className="flex items-center justify-center gap-3 py-4 rounded-3xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
-            >
-              <Download size={16} />
-              Save PDF
-            </button>
-            <button 
-              className="flex items-center justify-center gap-3 py-4 rounded-3xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
-            >
-              <Share2 size={16} />
-              Dispatch
-            </button>
-          </div>
-        </div>
-
-        <p className="text-center mt-8 text-[9px] font-bold text-white/10 uppercase tracking-[0.3em]">
-          Terminals: Verified AES-256
-        </p>
+        {/* Magnetic Stripe / Perforation Decoration */}
+        <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#000d1a] rounded-full" />
+        <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#000d1a] rounded-full" />
       </motion.div>
+
+      {/* 3. ACTION BUTTONS */}
+      <div className="mt-10 flex gap-4 w-full max-w-sm relative z-10">
+        <motion.button 
+          whileTap={{ scale: 0.95 }}
+          className="flex-1 py-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all"
+        >
+          <Download size={16} className="text-[#00FFFF]" />
+          Save PDF
+        </motion.button>
+        <motion.button 
+          whileTap={{ scale: 0.95 }}
+          className="flex-1 py-4 rounded-2xl bg-[#00FFFF] text-[#000d1a] flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest shadow-[0_10px_30px_rgba(0,255,255,0.3)]"
+        >
+          <Share2 size={16} />
+          Dispatch
+        </motion.button>
+      </div>
+
+      <p className="mt-8 text-zinc-600 text-[8px] font-black uppercase tracking-[0.4em] text-center max-w-[200px] leading-relaxed">
+        Present this encrypted signal at the entry terminal for automated hangar access.
+      </p>
     </div>
   );
-};
+}
 
-export default TicketQR;
+const DetailItem = ({ icon, label, value }) => (
+  <div className="space-y-1">
+    <div className="flex items-center gap-2 opacity-30">
+      {icon}
+      <p className="text-[7px] font-black uppercase tracking-widest">{label}</p>
+    </div>
+    <p className="text-xs font-bold font-mono tracking-tight">{value}</p>
+  </div>
+);
+
+export default Ticket;

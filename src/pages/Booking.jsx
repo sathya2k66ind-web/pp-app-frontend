@@ -1,11 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Cpu, Clock, Layers, Zap } from "lucide-react";
+import { ChevronLeft, Cpu, Clock, Layers, Zap, User, Target } from "lucide-react";
+import { useUser } from "../context/UserContext"; // 👈 Integrated Global Context
 
 export default function Booking() {
   const navigate = useNavigate();
   const locationData = useLocation();
+  const { userData } = useUser(); // 👈 Accessing real user data
 
   const mall = locationData.state || {
     name: "UB City Mall",
@@ -61,8 +63,11 @@ export default function Booking() {
   const duration = exitMinutes > entryMinutes ? ((exitMinutes - entryMinutes) / 60).toFixed(1) : null;
 
   const handleContinue = () => {
+    // 🛡️ CRITICAL: Attaching User ID to the booking state
     navigate("/payment", {
       state: { 
+        userId: userData?.userId, // 👈 "Global Brain" Integration
+        userName: userData?.name,
         mall: mall.name, 
         slot: selectedSlot, 
         entryTime: formatTime(entryMinutes), 
@@ -81,65 +86,73 @@ export default function Booking() {
   }, [entryMinutes, floor]);
 
   return (
-    <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden relative">
       
-      {/* 1. CINEMATIC HEADER */}
-      <div className="relative h-80 w-full overflow-hidden">
+      {/* CINEMATIC HEADER */}
+      <div className="relative h-96 w-full overflow-hidden">
         <motion.img 
-          initial={{ scale: 1.1 }}
+          initial={{ scale: 1.2 }}
           animate={{ scale: 1 }}
+          transition={{ duration: 2 }}
           src={mall.image} 
           alt={mall.name} 
-          className="w-full h-full object-cover opacity-40 grayscale-[30%]" 
+          className="w-full h-full object-cover opacity-40 grayscale-[20%]" 
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#000d1a]/20 via-[#000d1a]/60 to-[#000d1a]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#000d1a]/60 to-[#000d1a]"></div>
 
-        <div className="absolute top-12 left-6 right-6 flex justify-between items-center text-white">
+        <div className="absolute top-12 left-6 right-6 flex justify-between items-center z-20">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 backdrop-blur-md"
+            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl"
           >
             <ChevronLeft size={20} className="text-[#00FFFF]" />
           </button>
-          <div className="px-3 py-1 bg-[#00FFFF]/10 border border-[#00FFFF]/30 rounded-full flex items-center gap-2">
-            <Cpu size={12} className="text-[#00FFFF] animate-pulse" />
-            <span className="text-[9px] font-black tracking-widest text-[#00FFFF]">OS v2.0 ACTIVE</span>
+          
+          {/* NEW: User Identification Badge */}
+          <div className="px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center gap-3">
+             <div className="text-right">
+                <p className="text-[7px] font-black text-[#00FFFF] uppercase tracking-widest">Pilot Identity</p>
+                <p className="text-[10px] font-black uppercase tracking-tight italic">{userData?.name?.split(' ')[0] || "Guest"}</p>
+             </div>
+             <div className="w-8 h-8 rounded-lg overflow-hidden border border-[#00FFFF]/30">
+                <img src={userData?.profilePic} alt="P" className="w-full h-full object-cover" />
+             </div>
           </div>
         </div>
 
-        <div className="absolute bottom-10 left-8">
-          <h1 className="text-4xl font-black tracking-tighter italic uppercase leading-none">
+        <div className="absolute bottom-12 left-8 right-8">
+          <div className="flex items-center gap-2 mb-3">
+             <Target size={14} className="text-[#00FFFF] animate-pulse" />
+             <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.4em]">Target Grid Sector</span>
+          </div>
+          <h1 className="text-5xl font-black tracking-tighter italic uppercase leading-none drop-shadow-2xl">
             {mall.name}
           </h1>
-          <div className="flex items-center gap-2 mt-2">
-            <div className="w-2 h-2 rounded-full bg-[#00FFFF] animate-ping" />
-            <p className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">Grid Synchronization</p>
-          </div>
         </div>
       </div>
 
-      {/* UI FIX: Increased pb-52 to allow content to scroll above both the Initialize button AND Bottom Nav */}
-      <div className="px-6 -mt-4 relative z-10 pb-52">
+      <div className="px-6 -mt-6 relative z-10 pb-52">
 
-        {/* 2. DUAL TIME DIALS */}
+        {/* REFINED DUAL TIME DIALS */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           {[
-            { label: "Arrival", time: entryMinutes, type: "entry" },
-            { label: "Departure", time: exitMinutes, type: "exit" }
+            { label: "Arrival Vector", time: entryMinutes, type: "entry" },
+            { label: "Departure Vector", time: exitMinutes, type: "exit" }
           ].map((dial) => (
-            <div key={dial.label} className="bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-5">
-              <p className="text-zinc-500 text-[9px] uppercase tracking-[0.2em] mb-4 font-black text-center">{dial.label}</p>
-              <div className="flex justify-between items-center bg-black/40 rounded-2xl p-1 border border-white/5">
+            <div key={dial.label} className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-6 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              <p className="text-zinc-500 text-[8px] uppercase tracking-[0.3em] mb-5 font-black text-center">{dial.label}</p>
+              <div className="flex justify-between items-center bg-black/60 rounded-2xl p-1.5 border border-white/5">
                 <button 
                   onClick={() => adjustTime(dial.type, -10)} 
-                  className="w-10 h-10 flex items-center justify-center text-white/40 hover:text-[#00FFFF] transition"
+                  className="w-10 h-10 flex items-center justify-center text-white/20 hover:text-[#00FFFF] transition-all hover:bg-white/5 rounded-xl"
                 >
                   -
                 </button>
-                <span className="text-xl font-black tabular-nums text-[#00FFFF]">{formatTime(dial.time)}</span>
+                <span className="text-xl font-black tabular-nums text-white italic">{formatTime(dial.time)}</span>
                 <button 
                   onClick={() => adjustTime(dial.type, 10)} 
-                  className="w-10 h-10 flex items-center justify-center text-white/40 hover:text-[#00FFFF] transition"
+                  className="w-10 h-10 flex items-center justify-center text-white/20 hover:text-[#00FFFF] transition-all hover:bg-white/5 rounded-xl"
                 >
                   +
                 </button>
@@ -148,31 +161,39 @@ export default function Booking() {
           ))}
         </div>
 
-        {/* 3. DURATION BADGE */}
+        {/* DURATION BADGE */}
         {duration && (
           <motion.div 
-            initial={{ opacity: 0, y: 10 }} 
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 py-3 bg-gradient-to-r from-[#00FFFF]/10 to-transparent border-l-2 border-[#00FFFF] px-4 flex justify-between items-center"
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-10 py-4 bg-gradient-to-r from-[#00FFFF]/10 via-[#00FFFF]/5 to-transparent border-l-4 border-[#00FFFF] px-6 flex justify-between items-center rounded-r-2xl"
           >
-            <div className="flex items-center gap-3">
-              <Clock size={14} className="text-[#00FFFF]" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Protocol Duration</span>
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-[#00FFFF]/10 rounded-lg">
+                <Clock size={16} className="text-[#00FFFF]" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Occupancy Protocol</p>
+                <p className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">Automated Timeline Sync</p>
+              </div>
             </div>
-            <span className="text-sm font-black text-[#00FFFF]">{duration} HRS</span>
+            <span className="text-lg font-black text-[#00FFFF] italic">{duration} HRS</span>
           </motion.div>
         )}
 
-        {/* 4. FLOOR NAVIGATOR */}
-        <div className="flex items-center gap-4 mb-8">
-          <Layers size={16} className="text-zinc-500" />
+        {/* FLOOR NAVIGATOR */}
+        <div className="flex items-center justify-between mb-8 px-2">
+          <div className="flex items-center gap-3">
+             <Layers size={16} className="text-zinc-500" />
+             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Level</span>
+          </div>
           <div className="flex gap-3">
             {["F1", "F2", "F3"].map((f) => (
               <button
                 key={f}
                 onClick={() => { setFloor(f); setSelectedSlot(null); }}
-                className={`px-5 py-2 rounded-xl font-black text-[10px] tracking-widest transition-all border ${
-                  floor === f ? "bg-[#00FFFF] text-black border-[#00FFFF]" : "border-white/10 bg-white/5 text-zinc-500"
+                className={`w-14 py-2.5 rounded-xl font-black text-[10px] tracking-widest transition-all border ${
+                  floor === f ? "bg-white text-black border-white shadow-[0_10px_20px_rgba(255,255,255,0.1)]" : "border-white/10 bg-white/5 text-zinc-500"
                 }`}
               >
                 {f}
@@ -181,56 +202,60 @@ export default function Booking() {
           </div>
         </div>
 
-        {/* 5. GRID HEATMAP */}
+        {/* GRID HEATMAP */}
         <AnimatePresence>
           {showHeatmap && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 p-6 rounded-[2.5rem]"
+              className="bg-white/[0.02] backdrop-blur-3xl border border-white/5 p-8 rounded-[3rem] relative overflow-hidden"
             >
-              <div className="flex justify-between items-center mb-6 px-2">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Select Grid Unit</h2>
-                <div className="flex items-center gap-2">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
+                 <Cpu size={60} />
+              </div>
+
+              <div className="flex justify-between items-center mb-8 px-2">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Grid Authorization</h2>
+                <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-full border border-green-500/20">
                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                   <span className="text-[8px] font-bold text-green-500 tracking-widest uppercase">Live Status</span>
+                   <span className="text-[8px] font-black text-green-500 tracking-[0.2em] uppercase">Live</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-4">
                 {slots.map((slot) => {
                   const isDisabled = slot.unavailable;
                   let colorClass;
-                  if (slot.permanentlyBlocked) colorClass = "bg-zinc-900 border-transparent text-zinc-800";
-                  else if (slot.id === selectedSlot) colorClass = "bg-[#00FFFF] text-black border-[#00FFFF] shadow-[0_0_20px_rgba(0,255,255,0.4)] scale-105 z-10";
-                  else if (slot.occupancy < 0.3) colorClass = "bg-[#00FFFF]/5 border-[#00FFFF]/20 text-[#00FFFF] hover:bg-[#00FFFF]/10";
+                  if (slot.permanentlyBlocked) colorClass = "bg-zinc-900/50 border-white/5 text-zinc-800";
+                  else if (slot.id === selectedSlot) colorClass = "bg-[#00FFFF] text-black border-[#00FFFF] shadow-[0_0_30px_rgba(0,255,255,0.5)] scale-110 z-10 ring-4 ring-[#000d1a]";
+                  else if (slot.occupancy < 0.3) colorClass = "bg-white/5 border-white/10 text-white hover:border-[#00FFFF]/50";
                   else if (slot.occupancy < 0.6) colorClass = "bg-orange-500/5 border-orange-500/20 text-orange-400";
                   else colorClass = "bg-red-500/5 border-red-500/20 text-red-500";
 
                   return (
                     <motion.div
                       key={slot.id}
-                      whileTap={!isDisabled ? { scale: 0.95 } : {}}
+                      whileTap={!isDisabled ? { scale: 0.9 } : {}}
                       onClick={() => !isDisabled && setSelectedSlot(slot.id)}
-                      className={`h-20 rounded-2xl border flex flex-col items-center justify-center font-black transition-all duration-300 ${colorClass} ${isDisabled ? "opacity-20 cursor-not-allowed" : "cursor-pointer"}`}
+                      className={`h-24 rounded-3xl border flex flex-col items-center justify-center font-black transition-all duration-500 ${colorClass} ${isDisabled ? "opacity-10 cursor-not-allowed grayscale" : "cursor-pointer"}`}
                     >
-                      <span className="text-[8px] opacity-40 mb-1">{slot.id.split('-')[0]}</span>
-                      <span className="text-sm tracking-tighter">{slot.id.split('-')[1]}</span>
+                      <span className="text-[7px] opacity-40 mb-1 uppercase tracking-tighter">{slot.id.split('-')[0]}</span>
+                      <span className="text-base tracking-tighter italic">{slot.id.split('-')[1]}</span>
                     </motion.div>
                   );
                 })}
               </div>
 
-              {/* LEGEND HUD */}
-              <div className="grid grid-cols-2 gap-y-4 mt-8 pt-6 border-t border-white/5 px-2">
+              <div className="grid grid-cols-4 gap-2 mt-10 pt-8 border-t border-white/5 px-2">
                 {[
-                  { color: "bg-[#00FFFF]/20", label: "Optimal" },
-                  { color: "bg-red-500/20", label: "High Load" },
-                  { color: "bg-zinc-800", label: "Reserved" },
-                  { color: "bg-[#00FFFF]", label: "Active" }
+                  { color: "bg-white/20", label: "Open" },
+                  { color: "bg-red-500/40", label: "Full" },
+                  { color: "bg-zinc-800", label: "Block" },
+                  { color: "bg-[#00FFFF]", label: "Your Selection" }
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-2 text-[8px] uppercase font-black text-zinc-500 tracking-widest">
-                    <div className={`w-2 h-2 rounded-full ${item.color}`}></div> {item.label}
+                  <div key={item.label} className="flex flex-col items-center gap-2">
+                    <div className={`w-full h-1 rounded-full ${item.color}`}></div> 
+                    <span className="text-[7px] uppercase font-black text-zinc-600 tracking-tighter text-center">{item.label}</span>
                   </div>
                 ))}
               </div>
@@ -239,26 +264,25 @@ export default function Booking() {
         </AnimatePresence>
       </div>
 
-      {/* 6. GLOBAL CTA FIX: Moved to bottom-20 to sit exactly ABOVE the bottom navigation bar */}
-      <div className="fixed bottom-20 left-0 right-0 p-6 z-[90] pointer-events-none">
+      {/* CTA BUTTON */}
+      <div className="fixed bottom-24 left-0 right-0 p-8 z-[90] pointer-events-none">
         <motion.button
           disabled={!selectedSlot}
-          whileHover={selectedSlot ? { scale: 1.02 } : {}}
-          whileTap={selectedSlot ? { scale: 0.98 } : {}}
+          whileTap={selectedSlot ? { scale: 0.95 } : {}}
           onClick={handleContinue}
-          className={`w-full py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-3 transition-all pointer-events-auto backdrop-blur-md ${
+          className={`w-full py-5 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-4 transition-all pointer-events-auto backdrop-blur-2xl border ${
             selectedSlot 
-              ? "bg-[#00FFFF] text-black shadow-[0_15px_40px_rgba(0,255,255,0.4)]" 
-              : "bg-white/5 text-zinc-700 border border-white/5"
+              ? "bg-[#00FFFF] text-black border-[#00FFFF] shadow-[0_20px_50px_rgba(0,255,255,0.3)]" 
+              : "bg-white/5 text-zinc-700 border-white/5"
           }`}
         >
           {selectedSlot ? (
             <>
-              <Zap size={16} fill="currentColor" /> 
-              Initialize {selectedSlot}
+              <Zap size={18} fill="currentColor" /> 
+              Confirm Protocol {selectedSlot}
             </>
           ) : (
-            "Select Unit to Continue"
+            "Select Grid Unit"
           )}
         </motion.button>
       </div>

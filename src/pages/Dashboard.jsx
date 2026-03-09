@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Star, Bell, Search, Music, Trophy, ChevronRight, Activity, MapPin } from "lucide-react";
+import { Zap, Star, ChevronRight, Activity, MapPin, Trophy, Sparkles } from "lucide-react";
+import { useUser } from "../context/UserContext"; // 👈 Integrated Global Context
 import { api } from "../api/api"; 
 import { logoutUser } from "../api/auth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { userData, loading: userLoading } = useUser(); // 👈 Accessing real user data
   const [activeTab, setActiveTab] = useState(0);
   const [malls, setMalls] = useState([]); 
   const [loading, setLoading] = useState(true);
@@ -31,6 +33,14 @@ const Dashboard = () => {
       image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
     }
   ];
+
+  // Dynamic Greeting Logic
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    return "Good Evening";
+  };
 
   useEffect(() => {
     const fetchMalls = async () => {
@@ -58,74 +68,103 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
+  // Show a clean loader if context or malls are fetching
+  if (loading || userLoading) {
     return (
       <div className="min-h-screen bg-[#000d1a] flex items-center justify-center">
-        <motion.div 
-          animate={{ rotate: 360 }} 
-          transition={{ repeat: Infinity, duration: 1 }}
-          className="w-10 h-10 border-4 border-[#00FFFF] border-t-transparent rounded-full"
-        />
+        <div className="relative">
+          <motion.div 
+            animate={{ rotate: 360 }} 
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+            className="w-16 h-16 border-2 border-white/5 border-t-[#00FFFF] rounded-full"
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#00FFFF]/10 rounded-full animate-pulse" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#000d1a] text-white font-sans overflow-x-hidden relative selection:bg-[#00FFFF]/30">
       
       {/* 1. TOP HUD NAV */}
-      <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-xl border-b border-white/5">
+      <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-[#000d1a]/80 backdrop-blur-2xl border-b border-white/5">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00FFFF]">Slotify OS v2.0</span>
-          <span className="text-xl font-black italic tracking-tighter flex items-center gap-2">
-            BENGALURU <ChevronRight size={14} className="text-[#00FFFF]" />
+          <div className="flex items-center gap-2">
+            <Sparkles size={10} className="text-[#00FFFF]" />
+            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40">Authorized Pilot</span>
+          </div>
+          <span className="text-xl font-black italic tracking-tighter flex items-center gap-2 uppercase">
+            {userData?.name?.split(' ')[0] || "Pilot"} <ChevronRight size={14} className="text-[#00FFFF]" />
           </span>
         </div>
-        <div className="flex gap-4 items-center">
-          {/* Linked to Profile.jsx */}
-          <div 
-            onClick={() => navigate("/profile")} 
-            className="w-10 h-10 rounded-full border-2 border-[#00FFFF]/30 overflow-hidden cursor-pointer shadow-[0_0_15px_rgba(0,255,255,0.2)] hover:scale-105 transition-transform"
-          >
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Slotify" alt="User" />
+
+        <div className="flex gap-5 items-center">
+          <div className="flex flex-col items-end hidden xs:flex">
+             <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">{getGreeting()}</span>
+             <span className="text-[10px] font-black text-[#00FFFF] uppercase">Active Session</span>
           </div>
-          {/* Logout functionality */}
-          <button onClick={handleLogout} className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">
-            Exit
+          
+          <motion.div 
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate("/profile")} 
+            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 p-1 cursor-pointer shadow-2xl hover:border-[#00FFFF]/50 transition-all"
+          >
+            <img 
+              src={userData?.profilePic || "https://api.dicebear.com/7.x/avataaars/svg?seed=Slotify"} 
+              alt="User" 
+              className="w-full h-full object-cover rounded-[0.8rem]"
+            />
+          </motion.div>
+
+          <button onClick={handleLogout} className="w-8 h-8 flex items-center justify-center bg-white/5 rounded-xl border border-white/5 text-zinc-500 hover:text-red-400 transition-colors">
+            <Zap size={14} />
           </button>
         </div>
       </nav>
 
-      {/* 2. BENTO STATS */}
-      <div className="px-6 mt-6 grid grid-cols-2 gap-4">
-        <div className="col-span-2 bg-gradient-to-r from-[#00FFFF]/10 to-transparent border border-white/10 p-4 rounded-[2rem] flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Active Grids</p>
-            <h4 className="text-2xl font-black text-[#00FFFF]">1,240 <span className="text-xs text-white/50">SLOTS</span></h4>
+      {/* 2. BENTO STATS - UPDATED WITH USER CONTEXT */}
+      <div className="px-6 mt-8">
+        <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-6 rounded-[2.5rem] relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+             <Activity size={80} className="text-[#00FFFF]" />
           </div>
-          <Activity className="text-[#00FFFF] animate-pulse" size={24} />
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Live Grid Pulse</p>
+              <h4 className="text-3xl font-black text-white italic">1,240 <span className="text-xs text-[#00FFFF] not-italic ml-1">SLOTS READY</span></h4>
+              <p className="text-[9px] font-bold text-zinc-500 mt-2 uppercase tracking-widest">Bengaluru Hub • High Availability</p>
+            </div>
+            <div className="w-14 h-14 bg-[#00FFFF]/10 rounded-[1.5rem] flex items-center justify-center border border-[#00FFFF]/20">
+               <Activity className="text-[#00FFFF] animate-pulse" size={24} />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 3. MESH GRADIENT EVENT SLIDER */}
-      <section className="px-6 mt-8">
-        <div className="relative h-60 w-full">
+      <section className="px-6 mt-10">
+        <div className="relative h-64 w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              className={`absolute inset-0 rounded-[3rem] overflow-hidden p-8 flex flex-col justify-end bg-gradient-to-br ${liveEvents[activeTab].color} border border-white/10`}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className={`absolute inset-0 rounded-[3rem] overflow-hidden p-10 flex flex-col justify-end bg-gradient-to-br ${liveEvents[activeTab].color} border border-white/10 shadow-2xl`}
             >
-              <img src={liveEvents[activeTab].image} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 grayscale" alt="Event" />
+              <img src={liveEvents[activeTab].image} className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 grayscale" alt="Event" />
               <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-[9px] font-black mb-4 border border-[#00FFFF]/30">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-black/40 backdrop-blur-xl rounded-full text-[9px] font-black mb-5 border border-white/10 tracking-widest">
                   <span className="text-[#00FFFF]">{liveEvents[activeTab].icon}</span>
                   {liveEvents[activeTab].tag}
                 </div>
-                <h3 className="text-4xl font-black uppercase italic leading-none">{liveEvents[activeTab].title}</h3>
-                <p className="text-[10px] font-bold text-white/50 mt-2 flex items-center gap-1 uppercase tracking-widest italic"><MapPin size={10} /> {liveEvents[activeTab].location}</p>
+                <h3 className="text-5xl font-black uppercase italic leading-[0.9] tracking-tighter">{liveEvents[activeTab].title}</h3>
+                <p className="text-[11px] font-bold text-white/40 mt-3 flex items-center gap-2 uppercase tracking-[0.2em] italic">
+                  <MapPin size={12} className="text-[#00FFFF]" /> {liveEvents[activeTab].location}
+                </p>
               </div>
             </motion.div>
           </AnimatePresence>
@@ -133,13 +172,17 @@ const Dashboard = () => {
       </section>
 
       {/* 4. MALL CARDS WITH HUD UI */}
-      <section className="px-6 mt-12 mb-32">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-[#00FFFF]">Nearby Grids</h2>
-          <div className="h-[1px] flex-1 bg-white/5 mx-4" />
+      <section className="px-6 mt-14 mb-32">
+        <div className="flex justify-between items-center mb-10">
+          <div className="flex flex-col">
+            <h2 className="text-xs font-black uppercase tracking-[0.4em] text-[#00FFFF]">Nearby Grids</h2>
+            <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mt-1">Satellite optimized results</p>
+          </div>
+          <div className="h-[1px] flex-1 bg-white/5 mx-6" />
+          <Star size={14} className="text-zinc-700" />
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           {malls.length > 0 ? malls.map((mall, idx) => {
             const isBusy = mall.status === "High Demand" || mall.status === "Congested";
             const capacity = isBusy ? "88%" : "24%";
@@ -147,47 +190,44 @@ const Dashboard = () => {
             return (
               <motion.div
                 key={mall._id || idx}
-                whileHover={{ y: -5 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => navigate("/booking", { state: mall })}
-                className="relative overflow-hidden bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 cursor-pointer group transition-all hover:bg-white/[0.06] hover:border-[#00FFFF]/30 shadow-xl"
+                className="relative overflow-hidden bg-white/[0.02] border border-white/5 rounded-[2.8rem] p-6 cursor-pointer group transition-all hover:bg-white/[0.05] hover:border-[#00FFFF]/20 shadow-xl"
               >
-                <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
-                
-                <div className="flex gap-5 items-center">
-                  <div className="relative w-20 h-20 shrink-0">
+                <div className="flex gap-6 items-center">
+                  <div className="relative w-24 h-24 shrink-0">
                     <img 
                       src={mall.image} 
-                      className="w-full h-full object-cover rounded-3xl grayscale-[50%] group-hover:grayscale-0 transition-all duration-500 shadow-lg border border-white/10" 
+                      className="w-full h-full object-cover rounded-[2rem] grayscale-[30%] group-hover:grayscale-0 transition-all duration-700 border border-white/10" 
                       alt={mall.name} 
-                      // 🛡️ Error Fallback to prevent broken icons
                       onError={(e) => {
                         e.target.src = "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=600";
                       }}
                     />
-                    <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-[#000d1a] ${isBusy ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]"}`} />
+                    <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full border-[5px] border-[#000d1a] ${isBusy ? "bg-red-500 shadow-[0_0_15px_red]" : "bg-[#00FFFF] shadow-[0_0_15px_#00FFFF]"}`} />
                   </div>
 
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-black text-lg uppercase tracking-tight group-hover:text-[#00FFFF] transition-colors leading-none">{mall.name}</h3>
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-orange-400">
+                      <h3 className="font-black text-xl uppercase tracking-tighter italic group-hover:text-[#00FFFF] transition-colors leading-none">{mall.name}</h3>
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-lg border border-white/5 text-[10px] font-black text-orange-400">
                         <Star size={10} fill="currentColor" /> {mall.rating}
                       </div>
                     </div>
-                    <p className="text-[9px] font-bold text-zinc-500 mt-1 uppercase tracking-widest">{mall.location} • {mall.distance}</p>
+                    <p className="text-[10px] font-bold text-zinc-500 mt-2 uppercase tracking-[0.1em]">{mall.location} • {mall.distance}</p>
 
-                    {/* Capacity HUD Bar */}
-                    <div className="mt-4">
-                      <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-zinc-500 mb-1.5">
+                    <div className="mt-5">
+                      <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-2">
                         <span>Load Factor</span>
                         <span className={isBusy ? "text-red-400" : "text-[#00FFFF]"}>{capacity}</span>
                       </div>
-                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden p-[2px]">
+                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden p-[1.5px]">
                         <motion.div 
                           initial={{ width: 0 }}
                           whileInView={{ width: capacity }}
                           viewport={{ once: true }}
-                          className={`h-full rounded-full ${isBusy ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-[#00FFFF] shadow-[0_0_8px_#00FFFF]"}`}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                          className={`h-full rounded-full ${isBusy ? "bg-red-500 shadow-[0_0_10px_red]" : "bg-[#00FFFF] shadow-[0_0_10px_#00FFFF]"}`}
                         />
                       </div>
                     </div>
@@ -196,7 +236,9 @@ const Dashboard = () => {
               </motion.div>
             );
           }) : (
-            <div className="text-center text-gray-500 py-10 font-bold uppercase tracking-widest text-xs border border-dashed border-white/10 rounded-[2.5rem]">No grid signals found</div>
+            <div className="text-center text-zinc-700 py-16 font-black uppercase tracking-[0.4em] text-[10px] border border-dashed border-white/5 rounded-[3rem]">
+              Waiting for Grid Signal...
+            </div>
           )}
         </div>
       </section>
