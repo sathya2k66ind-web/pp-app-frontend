@@ -8,70 +8,75 @@ export default function Splash() {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/login");
-    }, 4500);
+    }, 3000); // Increased slightly to let the "Unlocked" animation breathe
+
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
-    <div className="h-screen w-full bg-[#000d1a] flex flex-col items-center justify-center overflow-hidden font-sans relative">
+    <div className="h-screen w-full bg-[#001F3F] flex flex-col items-center justify-center overflow-hidden font-sans">
       
-      {/* 1. THE VOID: Clean Background with single deep glow */}
-      <div className="absolute w-[500px] h-[500px] bg-[#00FFFF]/10 blur-[140px] rounded-full" />
+      {/* Background Pulse Glow (Electric Cyan) */}
+      <div className="absolute w-96 h-96 bg-[#00FFFF] opacity-10 blur-[120px] rounded-full animate-pulse" />
 
-      {/* 2. THE BRAND: Flat, Modern, Sharp */}
-      <div className="relative z-10 flex flex-col items-center">
-        <motion.div
-          initial={{ opacity: 0, letterSpacing: "-0.05em" }}
-          animate={{ opacity: 1, letterSpacing: "0.02em" }}
-          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-center text-7xl font-black tracking-tighter text-white uppercase"
-        >
-          <span>SL</span>
+      {/* Main Logo Container */}
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="relative z-10 flex flex-col items-center"
+      >
+        {/* Wordmark: slotify */}
+        <div className="flex items-center text-6xl font-black tracking-tight text-white italic-none">
+          <span>sl</span>
           
-          {/* THE ICON: Precision-engineered Glass Circle */}
-          <div className="relative mx-4 w-20 h-20">
-            {/* Inner Glowing Ring */}
+          {/* The Hero 'O' (Triple Threat: Lock, Car, Headphones) */}
+          <motion.div 
+            initial={{ scale: 0.5, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+            className="relative mx-1 w-16 h-16 border-4 border-[#00FFFF] rounded-full flex items-center justify-center"
+          >
+            {/* The Headphone Arch / Padlock Shackle */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="absolute inset-0 border-[1px] border-white/20 rounded-full bg-white/5 backdrop-blur-md shadow-[0_0_40px_rgba(0,255,255,0.15)]"
-            />
-            
-            {/* The "O" Core: Minimalist Shackle Animation */}
-            <div className="absolute inset-0 flex items-center justify-center">
-               <motion.div 
-                initial={{ height: "0%" }}
-                animate={{ height: "40%" }}
-                transition={{ delay: 2, duration: 1, ease: "circOut" }}
-                className="w-[2px] bg-[#00FFFF] shadow-[0_0_15px_#00FFFF]"
-               />
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+              className="absolute -top-6 w-10 h-8 border-t-2 border-l-2 border-r-2 border-[#00FFFF] rounded-t-full"
+            >
+              {/* The "Unlocked" Gap */}
+              <div className="absolute -top-1 right-2 w-1 h-2 bg-[#001F3F]" />
+            </motion.div>
+
+            {/* The Car (Hidden Spot) */}
+            <div className="w-6 h-10 bg-white rounded-md relative shadow-[0_0_10px_rgba(0,255,255,0.5)]">
+               <div className="absolute top-2 left-1 right-1 h-3 bg-[#001F3F] rounded-sm opacity-80" /> {/* Windshield */}
             </div>
-          </div>
+          </motion.div>
 
-          <span>TIFY</span>
-        </motion.div>
+          <span>tify</span>
+        </div>
 
-        {/* 3. SUBTEXT: Thin, spaced, elegant */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.5, duration: 1 }}
-          className="mt-6 text-[10px] font-medium text-white/40 uppercase tracking-[1em] ml-[1em]"
+        {/* Slogan: The City, Unlocked. */}
+        <motion.h2
+          initial={{ letterSpacing: "0.1em", opacity: 0 }}
+          animate={{ letterSpacing: "0.4em", opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
+          className="mt-8 text-xs font-light text-[#00FFFF] uppercase tracking-[0.4em]"
         >
-          The City Unlocked
-        </motion.p>
-      </div>
+          The City, Unlocked.
+        </motion.h2>
+      </motion.div>
 
-      {/* 4. THE PROGRESS: Single, razor-thin line at the bottom */}
-      <div className="absolute bottom-20 w-40 h-[1px] bg-white/5 overflow-hidden">
-        <motion.div 
-          initial={{ x: "-100%" }}
-          animate={{ x: "100%" }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full h-full bg-gradient-to-r from-transparent via-[#00FFFF] to-transparent"
-        />
-      </div>
+      {/* Bottom Loading Bar (Visual flavor) */}
+      <motion.div 
+        initial={{ width: 0 }}
+        animate={{ width: "120px" }}
+        transition={{ delay: 0.5, duration: 2 }}
+        className="absolute bottom-20 h-[1px] bg-white/20"
+      >
+        <div className="h-full bg-[#00FFFF] w-1/3 animate-infinite-loading" />
+      </motion.div>
 
     </div>
   );
